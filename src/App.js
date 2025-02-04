@@ -2,9 +2,9 @@ import "./App.css";
 import { BrowserRouter, Route, Routes, Link } from "react-router-dom";
 import { Layout, Menu } from "antd";
 import {
-  HomeOutlined,
-  InfoCircleOutlined,
-  PhoneOutlined,
+  FormOutlined,
+  UnorderedListOutlined,
+  CreditCardOutlined,
 } from "@ant-design/icons";
 import Form from "./component/NoteForm";
 import List from "./component/NoteList";
@@ -22,13 +22,13 @@ function App() {
             defaultSelectedKeys={["1"]}
             style={{ height: "100%" }}
           >
-            <Menu.Item key="1" icon={<HomeOutlined />}>
+            <Menu.Item key="1" icon={<FormOutlined />}>
               <Link to="/">NoteForm</Link>
             </Menu.Item>
-            <Menu.Item key="2" icon={<InfoCircleOutlined />}>
+            <Menu.Item key="2" icon={<UnorderedListOutlined />}>
               <Link to="/list">NoteList</Link>
             </Menu.Item>
-            <Menu.Item key="3" icon={<PhoneOutlined />}>
+            <Menu.Item key="3" icon={<CreditCardOutlined />}>
               <Link to="/card">NoteCard</Link>
             </Menu.Item>
           </Menu>
