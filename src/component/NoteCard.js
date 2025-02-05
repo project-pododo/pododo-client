@@ -1,10 +1,10 @@
-import React from 'react';
-import { Card, Button } from 'antd';
-import { DeleteOutlined } from '@ant-design/icons';
+import React from "react";
+import { Card, Button } from "antd";
+import { DeleteOutlined } from "@ant-design/icons";
 
 function NoteCard({ note, onDelete }) {
   if (!note) {
-    return <div style={{ fontSize : 24}}>No note available</div>;
+    return <div style={{ fontSize: 24 }}>No note available</div>;
   }
 
   return (
@@ -15,7 +15,7 @@ function NoteCard({ note, onDelete }) {
           <DeleteOutlined />
         </Button>
       }
-      style={{ width: '100%' }}
+      style={{ width: "100%" }}
     >
       <p>{note.content}</p>
     </Card>
