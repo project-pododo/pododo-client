@@ -25,8 +25,12 @@ function App() {
   const handleDelete = (id) => {
     const deleteNote = notes.find((note) => note.id === id);
     if (!deleteNote) return;
-    setNotes([notes.filter((note) => note.id !== id)]);
-    setRubbish([...rubbish, deleteNote]);
+
+    const updateNotes = notes.filter((note) => note.id !== id);
+    setNotes([...updateNotes]);
+
+    setRubbish((prevRubbish) => [...prevRubbish, deleteNote]);
+    console.log("upodated Note:", updateNotes);
   };
 
   const handleRestore = (id) => {

@@ -32,11 +32,13 @@ function NoteList({ notes, onDelete }) {
       {/* <NoteForm onAdd={handleAddNote} /> */}
       {notes.length > 0 ? (
         <Row gutter={[16, 16]}>
-          {notes.map((note, index) => (
-            <Col xs={24} sm={12} md={8} lg={6} key={note.id || index}>
-              <NoteCard note={note} onDelete={onDelete} />
-            </Col>
-          ))}
+          {notes
+            .filter((note) => note !== null && note !== undefined)
+            .map((note) => (
+              <Col xs={24} sm={12} md={8} lg={6} key={note.id}>
+                <NoteCard note={note} onDelete={onDelete} />
+              </Col>
+            ))}
         </Row>
       ) : (
         <div style={{ fontSize: 16, textAlign: "center", width: "100%" }}>
