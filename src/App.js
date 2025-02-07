@@ -10,6 +10,7 @@ import { useState } from "react";
 import NoteForm from "./component/NoteForm";
 import NoteList from "./component/NoteList";
 import RubbishList from "./component/RubbishList";
+import CollapseList from "./component/CollapseList";
 
 const { Content, Sider } = Layout;
 
@@ -17,8 +18,8 @@ function App() {
   const [notes, setNotes] = useState([]);
   const [rubbish, setRubbish] = useState([]);
 
-  const handleAddNote = (title, content) => {
-    const newNote = { id: Date.now(), title, content };
+  const handleAddNote = (title, content, dateRange) => {
+    const newNote = { id: Date.now(), title, content, dateRange };
     setNotes([...notes, newNote]);
   };
 
@@ -63,6 +64,9 @@ function App() {
             >
               <Link to="/rubbish">휴지통</Link>
             </Menu.Item>
+            <Menu.Item key="4" icon={<UnorderedListOutlined />}>
+              <Link to="/collapse">CollapseList</Link>
+            </Menu.Item>
           </Menu>
         </Sider>
 
@@ -87,6 +91,7 @@ function App() {
                   <RubbishList rubbish={rubbish} onRestore={handleRestore} />
                 }
               />
+              <Route path="/collapse" element={<CollapseList />} />
             </Routes>
           </Content>
         </Layout>

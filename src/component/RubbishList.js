@@ -1,6 +1,7 @@
 import React from "react";
 import { Row, Col, Card, Button } from "antd";
 import { UndoOutlined } from "@ant-design/icons";
+import dayjs from "dayjs";
 
 function RubbishList({ rubbish, onRestore }) {
   return (
@@ -20,6 +21,18 @@ function RubbishList({ rubbish, onRestore }) {
                 style={{ width: "100%", backgroundColor: "#f8d7da" }}
               >
                 <p>{note.content}</p>
+                {note.dateRange && (
+                  <p
+                    style={{
+                      color: "gray",
+                      fontSize: "12px",
+                      marginTop: "8px",
+                    }}
+                  >
+                    📅 {dayjs(note.dateRange[0]).format("YYYY-MM-DD HH:mm")} ~{" "}
+                    {dayjs(note.dateRange[1]).format("YYYY-MM-DD HH:mm")}
+                  </p>
+                )}
               </Card>
             </Col>
           ))
