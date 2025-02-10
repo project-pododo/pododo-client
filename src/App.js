@@ -10,13 +10,13 @@ import { useState } from "react";
 import NoteForm from "./component/NoteForm";
 import NoteList from "./component/NoteList";
 import RubbishList from "./component/RubbishList";
-import CollapseList from "./component/CollapseList";
 
 const { Content, Sider } = Layout;
 
 function App() {
   const [notes, setNotes] = useState([]);
   const [rubbish, setRubbish] = useState([]);
+  const [selectedKey, setSelectedKey] = useState("1");
 
   const handleAddNote = (title, content, dateRange) => {
     const newNote = { id: Date.now(), title, content, dateRange };
@@ -45,38 +45,82 @@ function App() {
   return (
     <BrowserRouter>
       <Layout style={{}}>
-        <Sider width={200} className="site-layout-background">
+        <Sider
+          width={200}
+          className="site-layout-background"
+          style={{ backgroundColor: "#F4E6F1" }}
+        >
           <Menu
             mode="inline"
+            selectedKeys={[selectedKey]}
+            onSelect={({ key }) => setSelectedKey(key)}
             defaultSelectedKeys={["1"]}
-            style={{ height: "100%" }}
+            style={{ height: "100vh", backgroundColor: "#F4E6F1" }}
           >
-            <Menu.Item key="1" icon={<FormOutlined />}>
-              <Link to="/">NoteForm</Link>
+            <Menu.Item
+              key="1"
+              icon={<FormOutlined />}
+              style={{
+                backgroundColor:
+                  selectedKey === "1" ? "#D1A7E1" : "transparent",
+              }}
+            >
+              <Link
+                to="/"
+                style={{
+                  color: selectedKey === "1" ? "#ffffff" : "#000055",
+                }}
+              >
+                NoteForm
+              </Link>
             </Menu.Item>
-            <Menu.Item key="2" icon={<UnorderedListOutlined />}>
-              <Link to="/list">NoteList</Link>
+            <Menu.Item
+              key="2"
+              icon={<UnorderedListOutlined />}
+              style={{
+                backgroundColor:
+                  selectedKey === "2" ? "#D1A7E1" : "transparent",
+              }}
+            >
+              <Link
+                to="/list"
+                style={{
+                  color: selectedKey === "2" ? "#ffffff" : "#000055",
+                }}
+              >
+                NoteList
+              </Link>
             </Menu.Item>
             <Menu.Item
               key="3"
               icon={<DeleteOutlined />}
-              style={{ color: "red" }}
+              style={{
+                color: "red",
+                backgroundColor:
+                  selectedKey === "3" ? "#D1A7E1" : "transparent",
+              }}
             >
-              <Link to="/rubbish">휴지통</Link>
-            </Menu.Item>
-            <Menu.Item key="4" icon={<UnorderedListOutlined />}>
-              <Link to="/collapse">CollapseList</Link>
+              <Link
+                to="/rubbish"
+                style={{
+                  color: selectedKey === "3" ? "#ffffff" : "#000055",
+                }}
+              >
+                휴지통
+              </Link>
             </Menu.Item>
           </Menu>
         </Sider>
 
-        <Layout style={{ padding: "0 24px 24px" }}>
+        <Layout //style={{ padding: "0 24px 24px" }}
+        >
           <Content
             style={{
               padding: 24,
               margin: 0,
               minHeight: 380,
               height: "100%",
+              backgroundColor: "#FFF5FB",
             }}
           >
             <Routes>
@@ -91,7 +135,6 @@ function App() {
                   <RubbishList rubbish={rubbish} onRestore={handleRestore} />
                 }
               />
-              <Route path="/collapse" element={<CollapseList />} />
             </Routes>
           </Content>
         </Layout>
