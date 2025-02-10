@@ -11,6 +11,7 @@ function NoteList({ notes, onDelete }) {
         margin: "0 auto",
       }}
     >
+      <h2>할 일</h2>
       {notes.length > 0 ? (
         notes
           .filter((note) => note !== null && note !== undefined)
@@ -19,7 +20,7 @@ function NoteList({ notes, onDelete }) {
           ))
       ) : (
         <div style={{ fontSize: 16, textAlign: "center", width: "100%" }}>
-          "No Notes available"
+          할 일이 비어 있습니다.
         </div>
       )}
     </div>
