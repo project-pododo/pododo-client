@@ -1,0 +1,11 @@
+.ant-collapse-content {
+  background-color: #f4e6f1 !important; /* 기본 배경색 */
+}
+
+.ant-collapse-content-active {
+  background-color: #f4e6f1 !important; /* 펼쳐진 상태의 배경색 */
+}
+
+.ant-collapse-header {
+  align-items: center;
+}
