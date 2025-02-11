@@ -18,6 +18,12 @@ function App() {
   const [rubbish, setRubbish] = useState([]);
   const [selectedKey, setSelectedKey] = useState("1");
 
+  const handleUpdateNote = (id, updateNote) => {
+    setNotes((prevNotes) =>
+      prevNotes.map((note) => (note.id === id ? updateNote : note))
+    );
+  };
+
   const handleAddNote = (title, content, dateRange) => {
     const newNote = { id: Date.now(), title, content, dateRange };
     setNotes([...notes, newNote]);
@@ -112,8 +118,7 @@ function App() {
           </Menu>
         </Sider>
 
-        <Layout //style={{ padding: "0 24px 24px" }}
-        >
+        <Layout>
           <Content
             style={{
               padding: 24,
@@ -127,7 +132,13 @@ function App() {
               <Route path="/" element={<NoteForm onAdd={handleAddNote} />} />
               <Route
                 path="/list"
-                element={<NoteList notes={notes} onDelete={handleDelete} />}
+                element={
+                  <NoteList
+                    notes={notes}
+                    onDelete={handleDelete}
+                    onUpdate={handleUpdateNote}
+                  />
+                }
               />
               <Route
                 path="/rubbish"

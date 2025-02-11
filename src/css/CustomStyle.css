@@ -6,6 +6,24 @@
   background-color: #f4e6f1 !important; /* 펼쳐진 상태의 배경색 */
 }
 
-.ant-collapse-header {
-  align-items: center;
+.ant-collapse > .ant-collapse-item > .ant-collapse-header {
+  align-items: center !important ;
+}
+
+.ant-collapse-expand-icon {
+  display: none !important;
+}
+
+.button-hover-effect {
+  color: "red";
+  background-color: #f4e6f1 !important;
+}
+
+.button-hover-effect:hover {
+  background-color: #bfa2db !important;
+  color: #1890ff !important;
+}
+
+.ant-switch02 {
+  min-width: 70px !important;
 }
