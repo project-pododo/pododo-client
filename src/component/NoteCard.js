@@ -14,6 +14,7 @@ function NoteCard({ note, onDelete, onUpdate }) {
 
   const handleTitleChange = (e) => setTitle(e.target.value);
   const handleContentChange = (e) => setContent(e.target.value);
+  const isOverdue = note.dateRange && dayjs().isAfter(dayjs(note.dateRange[1]));
 
   const saveTitle = () => {
     setIsEditingTitle(false);
@@ -68,7 +69,19 @@ function NoteCard({ note, onDelete, onUpdate }) {
                   autoFocus
                 />
               ) : (
-                <div onClick={() => setIsEditingTitle(true)}>{title}</div>
+                <div
+                  onClick={() => setIsEditingTitle(true)}
+                  style={{
+                    textDecoration: note.isCompleted ? "line-through" : "none",
+                    color: note.isCompleted
+                      ? "#7D7D7D"
+                      : isOverdue
+                      ? "red"
+                      : "inherit",
+                  }}
+                >
+                  {title}
+                </div>
               )}
             </div>
             {note.dateRange && (
