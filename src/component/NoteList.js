@@ -1,4 +1,5 @@
 import React from "react";
+import { BackTop } from "antd";
 import NoteCard from "./NoteCard";
 
 function NoteList({ notes, onDelete, onUpdate }) {
@@ -44,6 +45,7 @@ function NoteList({ notes, onDelete, onUpdate }) {
           완료된 일이 없습니다.
         </div>
       )}
+      <BackTop />
     </div>
   );
 }

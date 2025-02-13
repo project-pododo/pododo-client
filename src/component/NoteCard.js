@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import { Collapse, Button, Input, Switch } from "antd";
-import { DeleteOutlined } from "@ant-design/icons";
+import { Collapse, Button, Input, Switch, Dropdown, Menu } from "antd";
+import { MoreOutlined } from "@ant-design/icons";
 import dayjs from "dayjs";
 import "../css/CustomStyle.css";
 
@@ -31,6 +31,14 @@ function NoteCard({ note, onDelete, onUpdate }) {
     onUpdate(note.id, { ...note, isCompleted: checked });
   };
 
+  const deleteMenu = (
+    <Menu>
+      <Menu.Item onClick={() => onDelete(note.id)} danger>
+        삭제
+      </Menu.Item>
+    </Menu>
+  );
+
   if (!note) {
     return <div style={{ fontSize: 24 }}>No note available</div>;
   }
@@ -52,7 +60,7 @@ function NoteCard({ note, onDelete, onUpdate }) {
               width: "100%",
             }}
           >
-            <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: "20px" }}>
               <Switch
                 checkedChildren="완료"
                 unCheckedChildren="미완료"
@@ -78,6 +86,8 @@ function NoteCard({ note, onDelete, onUpdate }) {
                       : isOverdue
                       ? "red"
                       : "inherit",
+                    fontSize: "16px",
+                    fontWeight: "bold",
                   }}
                 >
                   {title}
@@ -87,15 +97,15 @@ function NoteCard({ note, onDelete, onUpdate }) {
             {note.dateRange && (
               <p
                 style={{
-                  color: "#fff",
-                  fontSize: "14px",
+                  color: "#000",
+                  fontSize: "16px",
                   marginTop: "8px",
                   marginBottom: "8px",
                   marginRight: "10px",
                   minWidth: "258px",
                 }}
               >
-                📅 {dayjs(note.dateRange[0]).format("YYYY-MM-DD HH:mm")} ~{" "}
+                {dayjs(note.dateRange[0]).format("YYYY-MM-DD HH:mm")} ~{" "}
                 {dayjs(note.dateRange[1]).format("YYYY-MM-DD HH:mm")}
               </p>
             )}
@@ -103,14 +113,18 @@ function NoteCard({ note, onDelete, onUpdate }) {
         }
         key={note.id}
         extra={
-          <Button
-            type="text"
-            danger
-            onClick={() => onDelete(note.id)}
-            className="button-hover-effect"
+          <Dropdown
+            overlay={deleteMenu}
+            trigger={["hover"]}
+            placement="bottomLeft"
+            arrow
           >
-            <DeleteOutlined />
-          </Button>
+            <Button
+              type="text"
+              icon={<MoreOutlined />}
+              onClick={(e) => e.stopPropagation()}
+            />
+          </Dropdown>
         }
       >
         <div

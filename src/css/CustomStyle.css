@@ -27,3 +27,7 @@
 .ant-switch02 {
   min-width: 70px !important;
 }
+
+.ant-picker {
+  width: 350px !important;
+}
