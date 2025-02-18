@@ -1,12 +1,44 @@
-import React from "react";
-import { Collapse, Button } from "antd";
-import { DeleteOutlined } from "@ant-design/icons";
+import React, { useState } from "react";
+import { Collapse, Button, Input, Switch, Dropdown, Menu } from "antd";
+import { MoreOutlined } from "@ant-design/icons";
 import dayjs from "dayjs";
 import "../css/CustomStyle.css";
 
 const { Panel } = Collapse;
 
-function NoteCard({ note, onDelete }) {
+function NoteCard({ note, onDelete, onUpdate }) {
+  const [title, setTitle] = useState(note.title);
+  const [content, setContent] = useState(note.content);
+  const [isEditingTitle, setIsEditingTitle] = useState(false);
+  const [isEditingContent, setIsEditingContent] = useState(false);
+
+  const handleTitleChange = (e) => setTitle(e.target.value);
+  const handleContentChange = (e) => setContent(e.target.value);
+  const isOverdue = note.dateRange && dayjs().isAfter(dayjs(note.dateRange[1]));
+
+  const saveTitle = () => {
+    setIsEditingTitle(false);
+    onUpdate(note.id, { ...note, title });
+  };
+
+  const saveContent = () => {
+    setIsEditingContent(false);
+    onUpdate(note.id, { ...note, content });
+  };
+
+  const handleSwitchChange = (checked, e) => {
+    e.stopPropagation(); // Collapse 동작방지.
+    onUpdate(note.id, { ...note, isCompleted: checked });
+  };
+
+  const deleteMenu = (
+    <Menu>
+      <Menu.Item onClick={() => onDelete(note.id)} danger>
+        삭제
+      </Menu.Item>
+    </Menu>
+  );
+
   if (!note) {
     return <div style={{ fontSize: 24 }}>No note available</div>;
   }
@@ -15,23 +47,84 @@ function NoteCard({ note, onDelete }) {
     <Collapse
       accordion={false}
       style={{
-        width: "100%",
-        // marginBottom: "8px",
-        backgroundColor: "#9B59B6",
+        backgroundColor: note.isCompleted ? "#D5F5E3" : "#9B59B6", // 완료된 경우 색상 변경
       }}
     >
       <Panel
-        header={note.title}
+        header={
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              width: "100%",
+            }}
+          >
+            <div style={{ display: "flex", alignItems: "center", gap: "20px" }}>
+              <Switch
+                checkedChildren="완료"
+                unCheckedChildren="미완료"
+                checked={note.isCompleted}
+                onChange={handleSwitchChange}
+                size="large"
+                className="ant-switch02"
+              />
+              {isEditingTitle ? (
+                <Input
+                  value={title}
+                  onChange={handleTitleChange}
+                  onBlur={saveTitle}
+                  autoFocus
+                />
+              ) : (
+                <div
+                  onClick={() => setIsEditingTitle(true)}
+                  style={{
+                    textDecoration: note.isCompleted ? "line-through" : "none",
+                    color: note.isCompleted
+                      ? "#7D7D7D"
+                      : isOverdue
+                      ? "red"
+                      : "inherit",
+                    fontSize: "16px",
+                    fontWeight: "bold",
+                  }}
+                >
+                  {title}
+                </div>
+              )}
+            </div>
+            {note.dateRange && (
+              <p
+                style={{
+                  color: "#000",
+                  fontSize: "16px",
+                  marginTop: "8px",
+                  marginBottom: "8px",
+                  marginRight: "10px",
+                  minWidth: "258px",
+                }}
+              >
+                {dayjs(note.dateRange[0]).format("YYYY-MM-DD HH:mm")} ~{" "}
+                {dayjs(note.dateRange[1]).format("YYYY-MM-DD HH:mm")}
+              </p>
+            )}
+          </div>
+        }
         key={note.id}
         extra={
-          <Button
-            type="text"
-            danger
-            onClick={() => onDelete(note.id)}
-            style={{ color: "#6A3D9D", backgroundColor: "#F4E6F1" }}
+          <Dropdown
+            overlay={deleteMenu}
+            trigger={["hover"]}
+            placement="bottomLeft"
+            arrow
           >
-            <DeleteOutlined />
-          </Button>
+            <Button
+              type="text"
+              icon={<MoreOutlined />}
+              onClick={(e) => e.stopPropagation()}
+            />
+          </Dropdown>
         }
       >
         <div
@@ -40,12 +133,16 @@ function NoteCard({ note, onDelete }) {
             backgroundColor: "#F4E6F1",
           }}
         >
-          <p>{note.content}</p>
-          {note.dateRange && (
-            <p style={{ color: "gray", fontSize: "12px", marginTop: "8px" }}>
-              📅 {dayjs(note.dateRange[0]).format("YYYY-MM-DD HH:mm")} ~{" "}
-              {dayjs(note.dateRange[1]).format("YYYY-MM-DD HH:mm")}
-            </p>
+          {isEditingContent ? (
+            <Input.TextArea
+              value={content}
+              onChange={handleContentChange}
+              onBlur={saveContent}
+              autoSize={{ minRows: 2, maxRows: 6 }}
+              autoFocus
+            />
+          ) : (
+            <p onClick={() => setIsEditingContent(true)}>{content}</p>
           )}
         </div>
       </Panel>
