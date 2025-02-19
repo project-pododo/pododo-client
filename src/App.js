@@ -5,11 +5,13 @@ import {
   FormOutlined,
   UnorderedListOutlined,
   DeleteOutlined,
+  CheckCircleOutlined,
 } from "@ant-design/icons";
 import { useState } from "react";
 import NoteForm from "./component/NoteForm";
 import NoteList from "./component/NoteList";
 import RubbishList from "./component/RubbishList";
+import CompletedList from "./component/CompletedList";
 
 const { Content, Sider } = Layout;
 
@@ -99,17 +101,34 @@ function App() {
             </Menu.Item>
             <Menu.Item
               key="3"
-              icon={<DeleteOutlined />}
+              icon={<CheckCircleOutlined />}
               style={{
-                color: "red",
                 backgroundColor:
                   selectedKey === "3" ? "#D1A7E1" : "transparent",
               }}
             >
               <Link
-                to="/rubbish"
+                to="/completed"
                 style={{
                   color: selectedKey === "3" ? "#ffffff" : "#000055",
+                }}
+              >
+                CompletedList
+              </Link>
+            </Menu.Item>
+            <Menu.Item
+              key="4"
+              icon={<DeleteOutlined />}
+              style={{
+                color: "red",
+                backgroundColor:
+                  selectedKey === "4" ? "#D1A7E1" : "transparent",
+              }}
+            >
+              <Link
+                to="/rubbish"
+                style={{
+                  color: selectedKey === "4" ? "#ffffff" : "#000055",
                 }}
               >
                 휴지통
@@ -139,6 +158,10 @@ function App() {
                     onUpdate={handleUpdateNote}
                   />
                 }
+              />
+              <Route
+                path="/completed"
+                element={<CompletedList notes={notes} />}
               />
               <Route
                 path="/rubbish"
