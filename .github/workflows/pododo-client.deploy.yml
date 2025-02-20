@@ -29,13 +29,13 @@ jobs:
         with:
           credentials_json: ${{ secrets.GCP_SA_KEY }}
 
-      - name: Check Authenticated Service Account
+      - name: Check All Authenticated Accounts
         run: |
-          gcloud auth list --filter=status:ACTIVE --format="value(account)"    
+          gcloud auth list --format="table(account, status)"
 
-      - name: Check GCS Permissions
+      - name: Check Permissions
         run: |
-          gsutil iam get gs://${{ secrets.SERVER_USER }}
+          gcloud projects get-iam-policy $GOOGLE_CLOUD_PROJECT --flatten="bindings[].members" --format="table(bindings.role, bindings.members)"
 
       - name: Deploy to GCS
         run: |
