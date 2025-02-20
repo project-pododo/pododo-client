@@ -32,7 +32,7 @@ function RubbishList({ rubbish, onRestore }) {
                 </Button>
               }
             >
-              <p>{note.content}</p>
+              <p style={{ whiteSpace: "pre-line" }}>{note.content}</p>
               {note.dateRange && (
                 <p
                   style={{ color: "gray", fontSize: "12px", marginTop: "8px" }}
