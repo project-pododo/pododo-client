@@ -21,7 +21,7 @@ function NoteForm({ onAdd }) {
 
   const handleAdd = () => {
     if (!title.trim()) {
-      message.warning("제목을 입력해주세요.");
+      message.warning("제목을 입력해주세요. - CD");
       return;
     }
 
