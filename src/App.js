@@ -54,7 +54,6 @@ function App() {
   return (
     <BrowserRouter>
       <Layout style={{ minHeight: "100vh" }}>
-        {/* 상단 헤더 추가 */}
         <Header
           style={{
             backgroundColor: "#D1A7E1",
@@ -64,7 +63,14 @@ function App() {
             padding: "0 20px",
           }}
         >
-          <h1 style={{ color: "white", margin: 0 }}>PODODO ToDo 앱</h1>{" "}
+          <h1 style={{ color: "white", margin: 0 }}>
+            PODODO
+            <img
+              src="/images/icon-grapes.png"
+              alt="logo"
+              style={{ width: "28px", marginLeft: "4px" }}
+            />
+          </h1>{" "}
           <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
             <Avatar size="large" icon={<UserOutlined />} />{" "}
           </div>
