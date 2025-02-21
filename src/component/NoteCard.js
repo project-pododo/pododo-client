@@ -75,10 +75,14 @@ function NoteCard({ note, onDelete, onUpdate }) {
                   onChange={handleTitleChange}
                   onBlur={saveTitle}
                   autoFocus
+                  onClick={(e) => e.stopPropagation()}
                 />
               ) : (
                 <div
-                  onClick={() => setIsEditingTitle(true)}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setIsEditingTitle(true);
+                  }}
                   style={{
                     textDecoration: note.isCompleted ? "line-through" : "none",
                     color: note.isCompleted
@@ -142,7 +146,12 @@ function NoteCard({ note, onDelete, onUpdate }) {
               autoFocus
             />
           ) : (
-            <p onClick={() => setIsEditingContent(true)}>{content}</p>
+            <p
+              style={{ whiteSpace: "pre-line", cursor: "pointer" }}
+              onClick={() => setIsEditingContent(true)}
+            >
+              {content}
+            </p>
           )}
         </div>
       </Panel>
