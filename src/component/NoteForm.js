@@ -21,12 +21,12 @@ function NoteForm({ onAdd }) {
 
   const handleAdd = () => {
     if (!title.trim()) {
-      message.warning("제목을 입력해주세요.");
+      message.warning("제목을 입력해주세요.1");
       return;
     }
 
     if (!content.trim()) {
-      message.warning("내용을 입력해주세요.");
+      message.warning("내용을 입력해주세요.1");
       return;
     }
 
