@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Collapse, Button, Input, Switch, Dropdown, Menu } from "antd";
 import { MoreOutlined } from "@ant-design/icons";
 import dayjs from "dayjs";
@@ -6,7 +6,7 @@ import "../css/CustomStyle.css";
 
 const { Panel } = Collapse;
 
-function NoteCard({ note, onDelete, onUpdate }) {
+function NoteCard({ note, onDelete, onUpdate, onOverdueChange }) {
   const [title, setTitle] = useState(note.title);
   const [content, setContent] = useState(note.content);
   const [isEditingTitle, setIsEditingTitle] = useState(false);
@@ -14,7 +14,16 @@ function NoteCard({ note, onDelete, onUpdate }) {
 
   const handleTitleChange = (e) => setTitle(e.target.value);
   const handleContentChange = (e) => setContent(e.target.value);
+
   const isOverdue = note.dateRange && dayjs().isAfter(dayjs(note.dateRange[1]));
+  const isCompletedAndExpired =
+    note.isCompleted &&
+    note.dateRange &&
+    dayjs().diff(dayjs(note.dateRange[1]), "day") >= 1;
+
+  useEffect(() => {
+    onOverdueChange(); // 개별 ID나 상태 전달이 아닌, 전체 개수를 계산하게 호출
+  }, [isOverdue, note.id, onOverdueChange]);
 
   const saveTitle = () => {
     setIsEditingTitle(false);
@@ -39,7 +48,7 @@ function NoteCard({ note, onDelete, onUpdate }) {
     </Menu>
   );
 
-  if (!note) {
+  if (!note || isCompletedAndExpired) {
     return <div style={{ fontSize: 24 }}>No note available</div>;
   }
 

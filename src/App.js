@@ -1,6 +1,6 @@
 import "./App.css";
 import { BrowserRouter, Route, Routes, Link } from "react-router-dom";
-import { Layout, Menu, Avatar } from "antd";
+import { Layout, Menu, Avatar, Badge } from "antd";
 import {
   FormOutlined,
   UnorderedListOutlined,
@@ -13,6 +13,7 @@ import NoteForm from "./component/NoteForm";
 import NoteList from "./component/NoteList";
 import RubbishList from "./component/RubbishList";
 import CompletedList from "./component/CompletedList";
+import dayjs from "dayjs";
 
 const { Content, Sider, Header } = Layout;
 
@@ -20,6 +21,7 @@ function App() {
   const [notes, setNotes] = useState([]);
   const [rubbish, setRubbish] = useState([]);
   const [selectedKey, setSelectedKey] = useState("1");
+  const [isOverdueCount, setIsOverdueCount] = useState(0);
 
   const handleUpdateNote = (id, updateNote) => {
     setNotes((prevNotes) =>
@@ -51,6 +53,13 @@ function App() {
     }
   };
 
+  const handleOverdueChange = () => {
+    const overdueCount = notes.filter(
+      (note) => note.dateRange && dayjs().isAfter(dayjs(note.dateRange[1]))
+    ).length;
+    setIsOverdueCount(overdueCount);
+  };
+
   return (
     <BrowserRouter>
       <Layout style={{ minHeight: "100vh" }}>
@@ -72,7 +81,9 @@ function App() {
             />
           </h1>{" "}
           <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-            <Avatar size="large" icon={<UserOutlined />} />{" "}
+            <Badge count={isOverdueCount} offset={[10, 0]}>
+              <Avatar size="large" icon={<UserOutlined />} />{" "}
+            </Badge>
           </div>
         </Header>
         <Layout style={{}}>
@@ -179,13 +190,18 @@ function App() {
                       notes={notes}
                       onDelete={handleDelete}
                       onUpdate={handleUpdateNote}
+                      onOverdueChange={handleOverdueChange}
                     />
                   }
                 />
                 <Route
                   path="/completed"
                   element={
-                    <CompletedList notes={notes} onDelete={handleDelete} />
+                    <CompletedList
+                      notes={notes}
+                      onDelete={handleDelete}
+                      onOverdueChange={handleOverdueChange}
+                    />
                   }
                 />
                 <Route

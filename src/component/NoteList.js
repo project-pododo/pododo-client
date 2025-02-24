@@ -1,10 +1,14 @@
 import React from "react";
 import { BackTop } from "antd";
 import NoteCard from "./NoteCard";
+import dayjs from "dayjs";
 
-function NoteList({ notes, onDelete, onUpdate }) {
+function NoteList({ notes, onDelete, onUpdate, onOverdueChange }) {
   const pendingNotes = notes.filter((note) => !note.isCompleted);
-  const completedNotes = notes.filter((note) => note.isCompleted);
+  const completedNotes = notes.filter((note) => {
+    if (!note.isCompleted || !note.dateRange) return false;
+    return dayjs().diff(dayjs(note.dateRange[1]), "day") < 1;
+  });
 
   return (
     <div
@@ -23,6 +27,7 @@ function NoteList({ notes, onDelete, onUpdate }) {
             note={note}
             onDelete={onDelete}
             onUpdate={onUpdate}
+            onOverdueChange={onOverdueChange}
           />
         ))
       ) : (
@@ -38,6 +43,7 @@ function NoteList({ notes, onDelete, onUpdate }) {
             note={note}
             onDelete={onDelete}
             onUpdate={onUpdate}
+            onOverdueChange={onOverdueChange}
           />
         ))
       ) : (
