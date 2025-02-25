@@ -19,7 +19,7 @@ function CompletedList({ notes, onDelete }) {
   return (
     <div style={{ padding: 20, margin: "0 auto" }}>
       <h2>완료된 항목 (과거 날짜)</h2>
-      <Input
+      <Input.Search
         placeholder="Search Text"
         prefix={<SearchOutlined />}
         allowClear
