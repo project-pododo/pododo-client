@@ -60,7 +60,8 @@ function NoteForm({ onAdd }) {
           style={{ flex: 1, borderColor: "#6A0DAD" }}
         />
         <RangePicker
-          showTime
+          showTime={{ format: "HH:mm" }}
+          format="YYYY-MM-DD HH:mm"
           value={dateRange}
           onChange={(dates) =>
             setDateRange(dates || [defaultStart, defaultEnd])

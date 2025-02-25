@@ -1,19 +1,34 @@
-import React from "react";
-import { Collapse, Button, Dropdown, Menu } from "antd";
-import { MoreOutlined } from "@ant-design/icons";
+import React, { useState } from "react";
+import { Collapse, Button, Dropdown, Menu, Input } from "antd";
+import { MoreOutlined, SearchOutlined } from "@ant-design/icons";
 import dayjs from "dayjs";
 
 const { Panel } = Collapse;
 
 function CompletedList({ notes, onDelete }) {
+  const [searchText, setSearchText] = useState("");
+
   // 현재 날짜보다 이전에 등록된 완료된 항목 필터링
   const pastCompletedNotes = notes.filter(
-    (note) => note.isCompleted && dayjs(note.dateRange[1]).isBefore(dayjs())
+    (note) =>
+      note.isCompleted &&
+      dayjs(note.dateRange[1]).isBefore(dayjs()) &&
+      note.title.toLowerCase().includes(searchText.toLowerCase())
   );
 
   return (
     <div style={{ padding: 20, margin: "0 auto" }}>
       <h2>완료된 항목 (과거 날짜)</h2>
+      <Input.Search
+        placeholder="Search Text"
+        prefix={<SearchOutlined />}
+        allowClear
+        enterButton="Search"
+        size="large"
+        value={searchText}
+        onChange={(e) => setSearchText(e.target.value)}
+        style={{ marginBottom: 20 }}
+      />
       {pastCompletedNotes.length > 0 ? (
         <Collapse accordion>
           {pastCompletedNotes.map((note) => {
