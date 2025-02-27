@@ -61,8 +61,8 @@ function RubbishList({ rubbish, onRestore }) {
                           margin: 0,
                         }}
                       >
-                        📅 {dayjs(note.dateRange[0]).format("YYYY-MM-DD HH:mm")}{" "}
-                        ~ {dayjs(note.dateRange[1]).format("YYYY-MM-DD HH:mm")}
+                        {dayjs(note.dateRange[0]).format("YYYY-MM-DD HH:mm")} ~{" "}
+                        {dayjs(note.dateRange[1]).format("YYYY-MM-DD HH:mm")}
                       </p>
                     )}
                   </div>
