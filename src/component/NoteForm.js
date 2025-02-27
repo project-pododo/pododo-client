@@ -26,8 +26,8 @@ function NoteForm({ onAdd }) {
 
     try {
       // API 호출 (예시: POST 요청)
-      const response = await axios.post(
-        "http://localhost:8081/api/v1/todo/test",
+      const response = await axios.get(
+        "http://35.216.16.197:8081/api/v1/todo/test",
         {}
       );
 

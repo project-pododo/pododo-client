@@ -2,7 +2,7 @@ import axios from "axios";
 
 // 기본 API URL 설정
 const api = axios.create({
-  baseURL: "http://localhost:8081/api/v1", // API 서버의 기본 URL
+  baseURL: "http://35.216.16.197:8081/api/v1", // API 서버의 기본 URL
   headers: {
     "Content-Type": "application/json",
     Authorization: "pododo!12", // 비밀키
