@@ -1,7 +1,8 @@
 import React from "react";
-import { BackTop } from "antd";
+import { BackTop, message } from "antd";
 import NoteCard from "./NoteCard";
 import dayjs from "dayjs";
+import axios from "axios";
 
 function NoteList({ notes, onDelete, onUpdate, onOverdueChange }) {
   const pendingNotes = notes.filter((note) => !note.isCompleted);
@@ -9,6 +10,28 @@ function NoteList({ notes, onDelete, onUpdate, onOverdueChange }) {
     if (!note.isCompleted || !note.dateRange) return false;
     return dayjs().diff(dayjs(note.dateRange[1]), "day") < 1;
   });
+
+  const handleUpdate = async (updatedNote) => {
+    try {
+      const response = await axios.put("/api/v1/todo", {
+        todoMstId: updatedNote.id,
+        todoName: updatedNote.title,
+        todoDetail: updatedNote.content,
+        startDate: updatedNote.dateRange[0].format("YYYY-MM-DD HH:mm"),
+        endDate: updatedNote.dateRange[1].format("YYYY-MM-DD HH:mm"),
+      });
+
+      if (response.data && response.data.message) {
+        message.success(response.data.message);
+        onUpdate(updatedNote);
+      } else {
+        message.error(response.data.message);
+      }
+    } catch (error) {
+      message.error("API 호출 중 오류 발생.");
+      console.error("Error:", error);
+    }
+  };
 
   return (
     <div
@@ -26,7 +49,7 @@ function NoteList({ notes, onDelete, onUpdate, onOverdueChange }) {
             key={note.id}
             note={note}
             onDelete={onDelete}
-            onUpdate={onUpdate}
+            onUpdate={handleUpdate}
             onOverdueChange={onOverdueChange}
           />
         ))
@@ -42,7 +65,7 @@ function NoteList({ notes, onDelete, onUpdate, onOverdueChange }) {
             key={note.id}
             note={note}
             onDelete={onDelete}
-            onUpdate={onUpdate}
+            onUpdate={handleUpdate}
             onOverdueChange={onOverdueChange}
           />
         ))
