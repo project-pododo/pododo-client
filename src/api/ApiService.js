@@ -1,12 +1,12 @@
 import axios from "axios";
 
-// 기본 API URL 설정
 const api = axios.create({
-  baseURL: "http://localhost:8081/api/v1", // API 서버의 기본 URL
+  baseURL: "/api/v1", // 프록시를 사용하므로 상대 경로 사용
   headers: {
     "Content-Type": "application/json",
-    Authorization: "pododo!12", // 비밀키
+    Authorization: "pododo!12",
   },
+  withCredentials: false, // 프록시 사용 시 credentials는 보통 필요 없음
 });
 
 export const getTestData = async () => {

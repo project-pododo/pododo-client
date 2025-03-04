@@ -1,37 +1,67 @@
-import React, { useState } from "react";
-import { Collapse, Button, Dropdown, Menu, Input } from "antd";
+import React, { useEffect, useState, useMemo } from "react";
+import { Collapse, Button, Dropdown, Menu, Input, message } from "antd";
 import { MoreOutlined, SearchOutlined } from "@ant-design/icons";
 import dayjs from "dayjs";
+import axios from "axios";
 
 const { Panel } = Collapse;
 
-function CompletedList({ notes, onDelete }) {
+function CompletedList({ onDelete }) {
+  const [notes, setNotes] = useState([]);
   const [searchText, setSearchText] = useState("");
 
-  // 현재 날짜보다 이전에 등록된 완료된 항목 필터링
-  const pastCompletedNotes = notes.filter(
-    (note) =>
-      note.isCompleted &&
-      dayjs(note.dateRange[1]).isBefore(dayjs()) &&
+  // 완료된 항목 조회 API 호출
+  useEffect(() => {
+    fetchCompletedNotes();
+  }, []);
+
+  const fetchCompletedNotes = async () => {
+    try {
+      const response = await axios.get(
+        "/api/v1/todo/completed?startDate=&endDate="
+      );
+
+      if (response.status === 200 && response.data.code === "10000") {
+        const formattedData = response.data.data.map((item) => ({
+          id: item.todoMstId,
+          title: item.todoName,
+          content: item.todoDetail,
+          startDate: dayjs(item.startDate),
+          endDate: dayjs(item.endDate),
+        }));
+        setNotes(formattedData);
+      } else {
+        message.error(response.data.message);
+      }
+    } catch (error) {
+      console.error("Error fetching completed notes:", error);
+    }
+  };
+
+  // 검색 적용
+  const filteredNotes = useMemo(() => {
+    return notes.filter((note) =>
       note.title.toLowerCase().includes(searchText.toLowerCase())
-  );
+    );
+  }, [notes, searchText]);
 
   return (
     <div style={{ padding: 20, margin: "0 auto" }}>
       <h2>완료된 항목 (과거 날짜)</h2>
       <Input.Search
-        placeholder="Search Text"
+        placeholder="검색어 입력"
         prefix={<SearchOutlined />}
         allowClear
-        enterButton="Search"
+        enterButton="검색"
         size="large"
         value={searchText}
         onChange={(e) => setSearchText(e.target.value)}
         style={{ marginBottom: 20 }}
       />
-      {pastCompletedNotes.length > 0 ? (
+
+      {filteredNotes.length > 0 ? (
         <Collapse accordion>
-          {pastCompletedNotes.map((note) => {
+          {filteredNotes.map((note) => {
             const deleteMenu = (
               <Menu>
                 <Menu.Item onClick={() => onDelete(note.id)} danger>
@@ -59,8 +89,7 @@ function CompletedList({ notes, onDelete }) {
                         margin: 0,
                       }}
                     >
-                      완료일:{" "}
-                      {dayjs(note.dateRange[1]).format("YYYY-MM-DD HH:mm")}
+                      완료일: {note.endDate.format("YYYY-MM-DD HH:mm")}
                     </p>
                   </div>
                 }

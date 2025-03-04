@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from "react";
-import { Collapse, Button, Input, Switch, Dropdown, Menu } from "antd";
+import { Collapse, Button, Input, Switch, Dropdown, Menu,message } from "antd";
 import { MoreOutlined } from "@ant-design/icons";
 import dayjs from "dayjs";
+import axios from "axios"; 
 import "../css/CustomStyle.css";
 
 const { Panel } = Collapse;
 
-function NoteCard({ note, onDelete, onUpdate, onOverdueChange }) {
+function NoteCard({ note, onDelete, onUpdate, onOverdueChange, fetchNotes, fetchCompletedNotes }) {
   const [title, setTitle] = useState(note.title);
   const [content, setContent] = useState(note.content);
   const [isEditingTitle, setIsEditingTitle] = useState(false);
@@ -35,9 +36,26 @@ function NoteCard({ note, onDelete, onUpdate, onOverdueChange }) {
     onUpdate(note.id, { ...note, content });
   };
 
-  const handleSwitchChange = (checked, e) => {
+  const handleSwitchChange = async (checked, e) => {
     e.stopPropagation(); // Collapse 동작방지.
-    onUpdate(note.id, { ...note, isCompleted: checked });
+   
+    try {
+      const response = await axios.patch('/api/v1/todo/status', {
+        todoMstId: note.id,
+      });
+
+      if (response.status === 200) {
+        onUpdate(note.id, { ...note, isCompleted: checked });
+        onOverdueChange();
+
+        await fetchNotes();
+        await fetchCompletedNotes();
+      } else {
+        message.error(response.data.message);
+      }
+    } catch (error) {
+      console.error("Error while toggling status", error);
+    }
   };
 
   const deleteMenu = (

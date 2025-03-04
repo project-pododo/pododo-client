@@ -22,19 +22,27 @@ function NoteForm({ onAdd }) {
 
   // API 호출 함수
   const handleApiCall = async () => {
+    if (!title.trim() || !content.trim() || !dateRange) {
+      message.warning("필수 입력값을 입력해주세요.");
+      return;
+    }
     setLoading(true);
 
     try {
-      // API 호출 (예시: POST 요청)
       const response = await axios.post(
-        "http://localhost:8081/api/v1/todo/test",
-        {}
+        "/api/v1/todo",
+        {
+          todoName: title,
+          todoDetail: content,
+          startDate: dateRange[0].format("YYYY-MM-DD HH:mm"),
+          endDate: dateRange[1].format("YYYY-MM-DD HH:mm"),
+        }
       );
 
-      if (response.data) {
-        message.success("API 호출 성공!");
+      if (response.data && response.data.message) {
+        message.success(response.data.message);
       } else {
-        message.error("API 호출 실패.");
+        message.error(response.data.message);
       }
     } catch (error) {
       message.error("API 호출 중 오류 발생.");
@@ -42,31 +50,6 @@ function NoteForm({ onAdd }) {
     } finally {
       setLoading(false);
     }
-  };
-
-  const handleAdd = () => {
-    if (!title.trim()) {
-      message.warning("제목을 입력해주세요. - CD");
-      return;
-    }
-
-    if (!content.trim()) {
-      message.warning("내용을 입력해주세요.");
-      return;
-    }
-
-    setLoading(true);
-
-    setTimeout(() => {
-      const finalDateRange = dateRange || [defaultStart, defaultEnd];
-
-      onAdd(title, content, finalDateRange);
-      message.success("일정이 추가되었습니다.");
-      setTitle("");
-      setContent("");
-      setDateRange([defaultStart, defaultEnd]);
-      setLoading(false);
-    }, 1000); //임시로 로딩시간 1초 세팅. api 적용 후 제거.
   };
 
   return (
@@ -104,7 +87,7 @@ function NoteForm({ onAdd }) {
         <Spin spinning={loading} tip="Loading...">
           <Button
             type="primary"
-            onClick={handleAdd}
+            onClick={handleApiCall}
             style={{
               marginTop: 8,
               width: "100%",
@@ -114,19 +97,6 @@ function NoteForm({ onAdd }) {
             loading={loading}
           >
             추가하기
-          </Button>
-          <Button
-            type="default"
-            onClick={handleApiCall}
-            style={{
-              marginTop: 8,
-              width: "100%",
-              backgroundColor: "#4CAF50",
-              borderColor: "#4CAF50",
-            }}
-            loading={loading}
-          >
-            API 호출하기
           </Button>
         </Spin>
       </div>
