@@ -23,7 +23,9 @@ function NoteList({ onDelete, onUpdate, onOverdueChange }) {
         }));
         setNotes(formattedNotes);
       } else {
-        message.error(response.data.message || "리스트를 불러오는 데 실패했습니다.");
+        message.error(
+          response.data.message || "리스트를 불러오는 데 실패했습니다."
+        );
       }
     } catch (error) {
       message.error("할 일 목록을 불러오는 중 오류 발생.");
@@ -35,7 +37,7 @@ function NoteList({ onDelete, onUpdate, onOverdueChange }) {
   const fetchCompletedNotes = async () => {
     const today = dayjs().format("YYYY-MM-DD");
     // const startDate = today;
-    const startDate = '2025-01-01';
+    const startDate = "2025-01-01";
     const endDate = today;
 
     try {
@@ -53,7 +55,9 @@ function NoteList({ onDelete, onUpdate, onOverdueChange }) {
         }));
         setCompletedNotes(formattedCompletedNotes);
       } else {
-        message.error(response.data.message || "완료된 목록을 불러오는 데 실패했습니다.");
+        message.error(
+          response.data.message || "완료된 목록을 불러오는 데 실패했습니다."
+        );
       }
     } catch (error) {
       message.error("완료된 목록을 불러오는 중 오류 발생.");
@@ -78,16 +82,15 @@ function NoteList({ onDelete, onUpdate, onOverdueChange }) {
         endDate: updatedNote.dateRange[1].format("YYYY-MM-DD HH:mm"),
       });
 
-      if (response.data && response.data.message) {
+      if (response.data && response.data.code === "10002") {
         message.success(response.data.message);
-        await fetchNotes(); 
+        await fetchNotes();
         await fetchCompletedNotes();
       } else {
         message.error(response.data.message);
       }
     } catch (error) {
       message.error("API 호출 중 오류 발생.");
-      console.error("Error:", error);
     }
   };
 

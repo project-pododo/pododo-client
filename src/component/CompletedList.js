@@ -6,11 +6,10 @@ import axios from "axios";
 
 const { Panel } = Collapse;
 
-function CompletedList({ onDelete }) {
+function CompletedList() {
   const [notes, setNotes] = useState([]);
   const [searchText, setSearchText] = useState("");
 
-  // 완료된 항목 조회 API 호출
   useEffect(() => {
     fetchCompletedNotes();
   }, []);
@@ -38,7 +37,22 @@ function CompletedList({ onDelete }) {
     }
   };
 
-  // 검색 적용
+  const handleDelete = async (id) => {
+    try {
+      const response = await axios.delete("/api/v1/todo", {
+        data: { todoMstId: id },
+      });
+      if (response.status === 200 && response.data.code === "10003") {
+        message.success(response.data.message);
+        fetchCompletedNotes();
+      } else {
+        message.error(response.data.message);
+      }
+    } catch (error) {
+      message.error("삭제 중 오류가 발생했습니다.");
+    }
+  };
+
   const filteredNotes = useMemo(() => {
     return notes.filter((note) =>
       note.title.toLowerCase().includes(searchText.toLowerCase())
@@ -47,7 +61,7 @@ function CompletedList({ onDelete }) {
 
   return (
     <div style={{ padding: 20, margin: "0 auto" }}>
-      <h2>완료된 항목 (과거 날짜)</h2>
+      <h2>완료된 항목</h2>
       <Input.Search
         placeholder="검색어 입력"
         prefix={<SearchOutlined />}
@@ -64,7 +78,7 @@ function CompletedList({ onDelete }) {
           {filteredNotes.map((note) => {
             const deleteMenu = (
               <Menu>
-                <Menu.Item onClick={() => onDelete(note.id)} danger>
+                <Menu.Item onClick={() => handleDelete(note.id)} danger>
                   삭제
                 </Menu.Item>
               </Menu>
