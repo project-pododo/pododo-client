@@ -24,13 +24,13 @@ function NoteCard({
   const handleContentChange = (e) => setContent(e.target.value);
 
   const isOverdue = note.dateRange && dayjs().isAfter(dayjs(note.dateRange[1]));
-  const isCompletedAndExpired =
-    note.isCompleted &&
-    note.dateRange &&
-    dayjs().diff(dayjs(note.dateRange[1]), "day") >= 1;
+  // const isCompletedAndExpired =
+  //   note.isCompleted &&
+  //   note.dateRange &&
+  //   dayjs().diff(dayjs(note.dateRange[1]), "day") >= 1;
 
   useEffect(() => {
-    onOverdueChange(); // 개별 ID나 상태 전달이 아닌, 전체 개수를 계산하게 호출
+    onOverdueChange();
   }, [isOverdue, note.id, onOverdueChange]);
 
   const saveTitle = () => {
@@ -73,9 +73,9 @@ function NoteCard({
     </Menu>
   );
 
-  if (!note || isCompletedAndExpired) {
-    return <div style={{ fontSize: 24 }}>No note available</div>;
-  }
+  // if (!note || isCompletedAndExpired) {
+  //   return <div style={{ fontSize: 24 }}>No note available</div>;
+  // }
 
   return (
     <Collapse

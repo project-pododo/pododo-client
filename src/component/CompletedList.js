@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useMemo } from "react";
-import { Collapse, Button, Dropdown, Menu, Input, message } from "antd";
+import { Collapse, Button, Dropdown, Menu, Input, message, Switch } from "antd";
 import { MoreOutlined, SearchOutlined } from "@ant-design/icons";
 import dayjs from "dayjs";
 import axios from "axios";
@@ -27,6 +27,7 @@ function CompletedList() {
           content: item.todoDetail,
           startDate: dayjs(item.startDate),
           endDate: dayjs(item.endDate),
+          //   isCompleted: true,
         }));
         setNotes(formattedData);
       } else {
@@ -74,7 +75,7 @@ function CompletedList() {
       />
 
       {filteredNotes.length > 0 ? (
-        <Collapse accordion>
+        <Collapse accordion={false}>
           {filteredNotes.map((note) => {
             const deleteMenu = (
               <Menu>
@@ -95,32 +96,68 @@ function CompletedList() {
                       width: "100%",
                     }}
                   >
-                    <div style={{ fontWeight: "bold" }}>{note.title}</div>
-                    <p
+                    <div
                       style={{
-                        color: "gray",
-                        fontSize: "14px",
-                        margin: 0,
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "20px",
                       }}
                     >
-                      완료일: {note.endDate.format("YYYY-MM-DD HH:mm")}
-                    </p>
+                      <Switch
+                        checkedChildren="완료"
+                        unCheckedChildren="미완료"
+                        checked={note.isCompleted}
+                        size="large"
+                        className="ant-switch02"
+                      />
+                      <div
+                        style={{
+                          color: "#7D7D7D",
+                          fontSize: "16px",
+                          fontWeight: "bold",
+                        }}
+                      >
+                        {note.title}
+                      </div>
+                    </div>
+                    {note.endDate && (
+                      <p
+                        style={{
+                          color: "#000",
+                          fontSize: "16px",
+                          marginTop: "8px",
+                          marginBottom: "8px",
+                          marginRight: "10px",
+                          minWidth: "258px",
+                        }}
+                      >
+                        완료일: {note.endDate.format("YYYY-MM-DD HH:mm")}
+                      </p>
+                    )}
                   </div>
                 }
                 key={note.id}
                 extra={
-                  <Dropdown
-                    overlay={deleteMenu}
-                    trigger={["hover"]}
-                    placement="bottomLeft"
-                    arrow
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "10px",
+                    }}
                   >
-                    <Button
-                      type="text"
-                      icon={<MoreOutlined />}
-                      onClick={(e) => e.stopPropagation()}
-                    />
-                  </Dropdown>
+                    <Dropdown
+                      overlay={deleteMenu}
+                      trigger={["hover"]}
+                      placement="bottomLeft"
+                      arrow
+                    >
+                      <Button
+                        type="text"
+                        icon={<MoreOutlined />}
+                        onClick={(e) => e.stopPropagation()}
+                      />
+                    </Dropdown>
+                  </div>
                 }
               >
                 <div style={{ padding: "10px", backgroundColor: "#F4E6F1" }}>

@@ -94,6 +94,14 @@ function NoteList({ onDelete, onUpdate, onOverdueChange }) {
     }
   };
 
+  const expiredCompletedNotes = completedNotes.filter(
+    (note) =>
+      note.isCompleted &&
+      note.dateRange &&
+      dayjs().diff(dayjs(note.dateRange[1]), "day") >= 1
+  );
+  const expiredCompletedNotesCount = expiredCompletedNotes.length;
+
   return (
     <div
       style={{
@@ -122,18 +130,32 @@ function NoteList({ onDelete, onUpdate, onOverdueChange }) {
         </div>
       )}
       <h2 style={{ marginTop: 30 }}>완료된 일</h2>
-      {completedNotes.length > 0 ? (
-        completedNotes.map((note) => (
-          <NoteCard
-            key={note.id}
-            note={note}
-            onDelete={onDelete}
-            onUpdate={handleUpdate}
-            onOverdueChange={onOverdueChange}
-            fetchNotes={fetchNotes}
-            fetchCompletedNotes={fetchCompletedNotes}
-          />
-        ))
+      {expiredCompletedNotesCount >= 2 ? (
+        <div style={{ fontSize: 24, textAlign: "center", width: "100%" }}>
+          No note available
+        </div>
+      ) : completedNotes.length > 0 ? (
+        completedNotes
+          .filter(
+            (note) =>
+              !(
+                note.isCompleted &&
+                note.dateRange &&
+                dayjs().diff(dayjs(note.dateRange[1]), "day") >= 1 &&
+                expiredCompletedNotesCount >= 2
+              )
+          )
+          .map((note) => (
+            <NoteCard
+              key={note.id}
+              note={note}
+              onDelete={onDelete}
+              onUpdate={handleUpdate}
+              onOverdueChange={onOverdueChange}
+              fetchNotes={fetchNotes}
+              fetchCompletedNotes={fetchCompletedNotes}
+            />
+          ))
       ) : (
         <div style={{ fontSize: 16, textAlign: "center", width: "100%" }}>
           완료된 일이 없습니다.
