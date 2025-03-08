@@ -23,7 +23,9 @@ function NoteList({ onDelete, onUpdate, onOverdueChange }) {
         }));
         setNotes(formattedNotes);
       } else {
-        message.error(response.data.message || "리스트를 불러오는 데 실패했습니다.");
+        message.error(
+          response.data.message || "리스트를 불러오는 데 실패했습니다."
+        );
       }
     } catch (error) {
       message.error("할 일 목록을 불러오는 중 오류 발생.");
@@ -35,7 +37,7 @@ function NoteList({ onDelete, onUpdate, onOverdueChange }) {
   const fetchCompletedNotes = async () => {
     const today = dayjs().format("YYYY-MM-DD");
     // const startDate = today;
-    const startDate = '2025-01-01';
+    const startDate = "2025-01-01";
     const endDate = today;
 
     try {
@@ -53,7 +55,9 @@ function NoteList({ onDelete, onUpdate, onOverdueChange }) {
         }));
         setCompletedNotes(formattedCompletedNotes);
       } else {
-        message.error(response.data.message || "완료된 목록을 불러오는 데 실패했습니다.");
+        message.error(
+          response.data.message || "완료된 목록을 불러오는 데 실패했습니다."
+        );
       }
     } catch (error) {
       message.error("완료된 목록을 불러오는 중 오류 발생.");
@@ -78,18 +82,25 @@ function NoteList({ onDelete, onUpdate, onOverdueChange }) {
         endDate: updatedNote.dateRange[1].format("YYYY-MM-DD HH:mm"),
       });
 
-      if (response.data && response.data.message) {
+      if (response.data && response.data.code === "10002") {
         message.success(response.data.message);
-        await fetchNotes(); 
+        await fetchNotes();
         await fetchCompletedNotes();
       } else {
         message.error(response.data.message);
       }
     } catch (error) {
       message.error("API 호출 중 오류 발생.");
-      console.error("Error:", error);
     }
   };
+
+  const expiredCompletedNotes = completedNotes.filter(
+    (note) =>
+      note.isCompleted &&
+      note.dateRange &&
+      dayjs().diff(dayjs(note.dateRange[1]), "day") >= 1
+  );
+  const expiredCompletedNotesCount = expiredCompletedNotes.length;
 
   return (
     <div
@@ -119,18 +130,32 @@ function NoteList({ onDelete, onUpdate, onOverdueChange }) {
         </div>
       )}
       <h2 style={{ marginTop: 30 }}>완료된 일</h2>
-      {completedNotes.length > 0 ? (
-        completedNotes.map((note) => (
-          <NoteCard
-            key={note.id}
-            note={note}
-            onDelete={onDelete}
-            onUpdate={handleUpdate}
-            onOverdueChange={onOverdueChange}
-            fetchNotes={fetchNotes}
-            fetchCompletedNotes={fetchCompletedNotes}
-          />
-        ))
+      {expiredCompletedNotesCount >= 2 ? (
+        <div style={{ fontSize: 24, textAlign: "center", width: "100%" }}>
+          No note available
+        </div>
+      ) : completedNotes.length > 0 ? (
+        completedNotes
+          .filter(
+            (note) =>
+              !(
+                note.isCompleted &&
+                note.dateRange &&
+                dayjs().diff(dayjs(note.dateRange[1]), "day") >= 1 &&
+                expiredCompletedNotesCount >= 2
+              )
+          )
+          .map((note) => (
+            <NoteCard
+              key={note.id}
+              note={note}
+              onDelete={onDelete}
+              onUpdate={handleUpdate}
+              onOverdueChange={onOverdueChange}
+              fetchNotes={fetchNotes}
+              fetchCompletedNotes={fetchCompletedNotes}
+            />
+          ))
       ) : (
         <div style={{ fontSize: 16, textAlign: "center", width: "100%" }}>
           완료된 일이 없습니다.

@@ -1,13 +1,20 @@
 import React, { useState, useEffect } from "react";
-import { Collapse, Button, Input, Switch, Dropdown, Menu,message } from "antd";
+import { Collapse, Button, Input, Switch, Dropdown, Menu, message } from "antd";
 import { MoreOutlined } from "@ant-design/icons";
 import dayjs from "dayjs";
-import axios from "axios"; 
+import axios from "axios";
 import "../css/CustomStyle.css";
 
 const { Panel } = Collapse;
 
-function NoteCard({ note, onDelete, onUpdate, onOverdueChange, fetchNotes, fetchCompletedNotes }) {
+function NoteCard({
+  note,
+  onDelete,
+  onUpdate,
+  onOverdueChange,
+  fetchNotes,
+  fetchCompletedNotes,
+}) {
   const [title, setTitle] = useState(note.title);
   const [content, setContent] = useState(note.content);
   const [isEditingTitle, setIsEditingTitle] = useState(false);
@@ -17,13 +24,13 @@ function NoteCard({ note, onDelete, onUpdate, onOverdueChange, fetchNotes, fetch
   const handleContentChange = (e) => setContent(e.target.value);
 
   const isOverdue = note.dateRange && dayjs().isAfter(dayjs(note.dateRange[1]));
-  const isCompletedAndExpired =
-    note.isCompleted &&
-    note.dateRange &&
-    dayjs().diff(dayjs(note.dateRange[1]), "day") >= 1;
+  // const isCompletedAndExpired =
+  //   note.isCompleted &&
+  //   note.dateRange &&
+  //   dayjs().diff(dayjs(note.dateRange[1]), "day") >= 1;
 
   useEffect(() => {
-    onOverdueChange(); // 개별 ID나 상태 전달이 아닌, 전체 개수를 계산하게 호출
+    onOverdueChange();
   }, [isOverdue, note.id, onOverdueChange]);
 
   const saveTitle = () => {
@@ -38,9 +45,9 @@ function NoteCard({ note, onDelete, onUpdate, onOverdueChange, fetchNotes, fetch
 
   const handleSwitchChange = async (checked, e) => {
     e.stopPropagation(); // Collapse 동작방지.
-   
+
     try {
-      const response = await axios.patch('/api/v1/todo/status', {
+      const response = await axios.patch("/api/v1/todo/status", {
         todoMstId: note.id,
       });
 
@@ -66,9 +73,9 @@ function NoteCard({ note, onDelete, onUpdate, onOverdueChange, fetchNotes, fetch
     </Menu>
   );
 
-  if (!note || isCompletedAndExpired) {
-    return <div style={{ fontSize: 24 }}>No note available</div>;
-  }
+  // if (!note || isCompletedAndExpired) {
+  //   return <div style={{ fontSize: 24 }}>No note available</div>;
+  // }
 
   return (
     <Collapse
