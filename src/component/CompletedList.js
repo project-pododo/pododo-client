@@ -27,7 +27,7 @@ function CompletedList() {
           content: item.todoDetail,
           startDate: dayjs(item.startDate),
           endDate: dayjs(item.endDate),
-          //   isCompleted: true,
+          isCompleted: item.todoStatus === "DONE",
         }));
         setNotes(formattedData);
       } else {
@@ -35,6 +35,22 @@ function CompletedList() {
       }
     } catch (error) {
       console.error("Error fetching completed notes:", error);
+    }
+  };
+
+  const handleToggleStatus = async (id) => {
+    try {
+      const response = await axios.patch("/api/v1/todo/status", {
+        todoMstId: id,
+      });
+      if (response.status === 200 && response.data.code === "10002") {
+        message.success(response.data.message);
+        fetchCompletedNotes();
+      } else {
+        message.error(response.data.message);
+      }
+    } catch (error) {
+      message.error("상태 변경 중 오류가 발생했습니다.");
     }
   };
 
@@ -107,6 +123,7 @@ function CompletedList() {
                         checkedChildren="완료"
                         unCheckedChildren="미완료"
                         checked={note.isCompleted}
+                        onChange={() => handleToggleStatus(note.id)}
                         size="large"
                         className="ant-switch02"
                       />
