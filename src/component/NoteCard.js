@@ -10,7 +10,6 @@ const { Panel } = Collapse;
 function NoteCard({
   note,
   onDelete,
-  onUpdate,
   onOverdueChange,
   fetchNotes,
   fetchCompletedNotes,
@@ -24,58 +23,85 @@ function NoteCard({
   const handleContentChange = (e) => setContent(e.target.value);
 
   const isOverdue = note.dateRange && dayjs().isAfter(dayjs(note.dateRange[1]));
-  // const isCompletedAndExpired =
-  //   note.isCompleted &&
-  //   note.dateRange &&
-  //   dayjs().diff(dayjs(note.dateRange[1]), "day") >= 1;
-
+ 
   useEffect(() => {
     onOverdueChange();
   }, [isOverdue, note.id, onOverdueChange]);
 
   const saveTitle = () => {
     setIsEditingTitle(false);
-    onUpdate(note.id, { ...note, title });
+    handleUpdate({ ...note, title });
   };
 
   const saveContent = () => {
     setIsEditingContent(false);
-    onUpdate(note.id, { ...note, content });
+    handleUpdate({ ...note, content });
   };
 
-  const handleSwitchChange = async (checked, e) => {
-    e.stopPropagation(); // Collapse 동작방지.
-
+  const handleToggleStatus = async (id) => {
     try {
       const response = await axios.patch("/api/v1/todo/status", {
-        todoMstId: note.id,
+        todoMstId: id,
       });
-
-      if (response.status === 200) {
-        onUpdate(note.id, { ...note, isCompleted: checked });
-        onOverdueChange();
-
-        await fetchNotes();
-        await fetchCompletedNotes();
+      if (response.status === 200 && response.data.code === "10002") {
+        message.success(response.data.message);
+        fetchNotes();
+        fetchCompletedNotes();
       } else {
         message.error(response.data.message);
       }
     } catch (error) {
-      console.error("Error while toggling status", error);
+      message.error("상태 변경 중 오류가 발생했습니다.");
+    }
+  };
+
+  // 투두 업데이트 API
+  const handleUpdate = async (updatedNote) => {
+    try {
+      const response = await axios.put("/api/v1/todo", {
+        todoMstId: updatedNote.id,
+        todoName: updatedNote.title,
+        todoDetail: updatedNote.content,
+        startDate: updatedNote.dateRange[0].format("YYYY-MM-DD HH:mm"),
+        endDate: updatedNote.dateRange[1].format("YYYY-MM-DD HH:mm"),
+      });
+
+      if (response.data.code === "10002") {
+        message.success(response.data.message);
+        fetchNotes();
+        fetchCompletedNotes();
+      } else {
+        message.error(response.data.message);
+      }
+    } catch (error) {
+      message.error("API 호출 중 오류 발생.");
+    }
+  };
+
+  const handleDelete = async (id) => {
+    try {
+      const response = await axios.delete("/api/v1/todo", {
+        data: { todoMstId: id },
+      });
+      if (response.status === 200 && response.data.code === "10003") {
+        message.success(response.data.message);
+        fetchNotes();
+        fetchCompletedNotes();
+      } else {
+        message.error(response.data.message);
+      }
+    } catch (error) {
+      message.error("삭제 중 오류가 발생했습니다.");
     }
   };
 
   const deleteMenu = (
     <Menu>
-      <Menu.Item onClick={() => onDelete(note.id)} danger>
+      <Menu.Item onClick={() => handleDelete(note.id)} danger>
         삭제
       </Menu.Item>
     </Menu>
   );
-
-  // if (!note || isCompletedAndExpired) {
-  //   return <div style={{ fontSize: 24 }}>No note available</div>;
-  // }
 
   return (
     <Collapse
@@ -99,7 +125,7 @@ function NoteCard({
                 checkedChildren="완료"
                 unCheckedChildren="미완료"
                 checked={note.isCompleted}
-                onChange={handleSwitchChange}
+                onChange={() => handleToggleStatus(note.id)}
                 size="large"
                 className="ant-switch02"
               />

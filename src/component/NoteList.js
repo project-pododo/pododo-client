@@ -36,9 +36,10 @@ function NoteList({ onDelete, onUpdate, onOverdueChange }) {
   // 완료 조회
   const fetchCompletedNotes = async () => {
     const today = dayjs().format("YYYY-MM-DD");
-    // const startDate = today;
     const startDate = "2025-01-01";
     const endDate = today;
+    // const startDate = dayjs(today).startOf("day").format("YYYY-MM-DD HH:mm");
+    // const endDate = dayjs(today).endOf("day").format("YYYY-MM-DD HH:mm");
 
     try {
       const response = await axios.get(`/api/v1/todo/completed`, {
@@ -71,29 +72,6 @@ function NoteList({ onDelete, onUpdate, onOverdueChange }) {
     fetchCompletedNotes();
   }, []);
 
-  // 투두 업데이트 API
-  const handleUpdate = async (updatedNote) => {
-    try {
-      const response = await axios.put("/api/v1/todo", {
-        todoMstId: updatedNote.id,
-        todoName: updatedNote.title,
-        todoDetail: updatedNote.content,
-        startDate: updatedNote.dateRange[0].format("YYYY-MM-DD HH:mm"),
-        endDate: updatedNote.dateRange[1].format("YYYY-MM-DD HH:mm"),
-      });
-
-      if (response.data && response.data.code === "10002") {
-        message.success(response.data.message);
-        await fetchNotes();
-        await fetchCompletedNotes();
-      } else {
-        message.error(response.data.message);
-      }
-    } catch (error) {
-      message.error("API 호출 중 오류 발생.");
-    }
-  };
-
   const expiredCompletedNotes = completedNotes.filter(
     (note) =>
       note.isCompleted &&
@@ -118,7 +96,6 @@ function NoteList({ onDelete, onUpdate, onOverdueChange }) {
             key={note.id}
             note={note}
             onDelete={onDelete}
-            onUpdate={handleUpdate}
             onOverdueChange={onOverdueChange}
             fetchNotes={fetchNotes}
             fetchCompletedNotes={fetchCompletedNotes}
@@ -150,7 +127,6 @@ function NoteList({ onDelete, onUpdate, onOverdueChange }) {
               key={note.id}
               note={note}
               onDelete={onDelete}
-              onUpdate={handleUpdate}
               onOverdueChange={onOverdueChange}
               fetchNotes={fetchNotes}
               fetchCompletedNotes={fetchCompletedNotes}
