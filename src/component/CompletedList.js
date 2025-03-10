@@ -1,5 +1,14 @@
 import React, { useEffect, useState, useMemo } from "react";
-import { Collapse, Button, Dropdown, Menu, Input, message, Switch } from "antd";
+import {
+  Collapse,
+  Button,
+  Dropdown,
+  Menu,
+  Input,
+  message,
+  Switch,
+  Pagination,
+} from "antd";
 import { MoreOutlined, SearchOutlined } from "@ant-design/icons";
 import dayjs from "dayjs";
 import axios from "axios";
@@ -9,6 +18,8 @@ const { Panel } = Collapse;
 function CompletedList() {
   const [notes, setNotes] = useState([]);
   const [searchText, setSearchText] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
 
   useEffect(() => {
     fetchCompletedNotes();
@@ -76,6 +87,16 @@ function CompletedList() {
     );
   }, [notes, searchText]);
 
+  const paginatedNotes = filteredNotes.slice(
+    (currentPage - 1) * pageSize,
+    currentPage * pageSize
+  );
+
+  const onShowSizeChange = (current, size) => {
+    setPageSize(size);
+    setCurrentPage(1);
+  };
+
   return (
     <div style={{ padding: 20, margin: "0 auto" }}>
       <h2>완료된 항목</h2>
@@ -90,78 +111,72 @@ function CompletedList() {
         style={{ marginBottom: 20 }}
       />
 
-      {filteredNotes.length > 0 ? (
-        <Collapse accordion={false}>
-          {filteredNotes.map((note) => {
-            const deleteMenu = (
-              <Menu>
-                <Menu.Item onClick={() => handleDelete(note.id)} danger>
-                  삭제
-                </Menu.Item>
-              </Menu>
-            );
+      {paginatedNotes.length > 0 ? (
+        <>
+          <Collapse accordion={false}>
+            {paginatedNotes.map((note) => {
+              const deleteMenu = (
+                <Menu>
+                  <Menu.Item onClick={() => handleDelete(note.id)} danger>
+                    삭제
+                  </Menu.Item>
+                </Menu>
+              );
 
-            return (
-              <Panel
-                header={
-                  <div
-                    style={{
-                      display: "flex",
-                      justifyContent: "space-between",
-                      alignItems: "center",
-                      width: "100%",
-                    }}
-                  >
+              return (
+                <Panel
+                  header={
                     <div
                       style={{
                         display: "flex",
+                        justifyContent: "space-between",
                         alignItems: "center",
-                        gap: "20px",
+                        width: "100%",
                       }}
                     >
-                      <Switch
-                        checkedChildren="완료"
-                        unCheckedChildren="미완료"
-                        checked={note.isCompleted}
-                        onChange={() => handleToggleStatus(note.id)}
-                        size="large"
-                        className="ant-switch02"
-                      />
                       <div
                         style={{
-                          color: "#7D7D7D",
-                          fontSize: "16px",
-                          fontWeight: "bold",
+                          display: "flex",
+                          alignItems: "center",
+                          gap: "20px",
                         }}
                       >
-                        {note.title}
+                        <Switch
+                          checkedChildren="완료"
+                          unCheckedChildren="미완료"
+                          checked={note.isCompleted}
+                          onChange={() => handleToggleStatus(note.id)}
+                          size="large"
+                          className="ant-switch02"
+                        />
+                        <div
+                          style={{
+                            color: "#7D7D7D",
+                            fontSize: "16px",
+                            fontWeight: "bold",
+                          }}
+                        >
+                          {note.title}
+                        </div>
                       </div>
+                      {note.endDate && (
+                        <p
+                          style={{
+                            color: "#000",
+                            fontSize: "16px",
+                            marginTop: "8px",
+                            marginBottom: "8px",
+                            marginRight: "10px",
+                            minWidth: "258px",
+                          }}
+                        >
+                          완료일: {note.endDate.format("YYYY-MM-DD HH:mm")}
+                        </p>
+                      )}
                     </div>
-                    {note.endDate && (
-                      <p
-                        style={{
-                          color: "#000",
-                          fontSize: "16px",
-                          marginTop: "8px",
-                          marginBottom: "8px",
-                          marginRight: "10px",
-                          minWidth: "258px",
-                        }}
-                      >
-                        완료일: {note.endDate.format("YYYY-MM-DD HH:mm")}
-                      </p>
-                    )}
-                  </div>
-                }
-                key={note.id}
-                extra={
-                  <div
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      gap: "10px",
-                    }}
-                  >
+                  }
+                  key={note.id}
+                  extra={
                     <Dropdown
                       overlay={deleteMenu}
                       trigger={["hover"]}
@@ -174,16 +189,25 @@ function CompletedList() {
                         onClick={(e) => e.stopPropagation()}
                       />
                     </Dropdown>
+                  }
+                >
+                  <div style={{ padding: "10px", backgroundColor: "#F4E6F1" }}>
+                    <p style={{ whiteSpace: "pre-line" }}>{note.content}</p>
                   </div>
-                }
-              >
-                <div style={{ padding: "10px", backgroundColor: "#F4E6F1" }}>
-                  <p style={{ whiteSpace: "pre-line" }}>{note.content}</p>
-                </div>
-              </Panel>
-            );
-          })}
-        </Collapse>
+                </Panel>
+              );
+            })}
+          </Collapse>
+          <Pagination
+            current={currentPage}
+            pageSize={pageSize}
+            total={filteredNotes.length}
+            onChange={(page) => setCurrentPage(page)}
+            onShowSizeChange={onShowSizeChange}
+            showSizeChanger
+            style={{ textAlign: "center", marginTop: 20 }}
+          />
+        </>
       ) : (
         <div style={{ fontSize: 16, textAlign: "center", width: "100%" }}>
           완료된 과거 항목이 없습니다.
