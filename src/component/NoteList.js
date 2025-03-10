@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { BackTop, message } from "antd";
+import { BackTop, message, Pagination } from "antd";
 import NoteCard from "./NoteCard";
 import dayjs from "dayjs";
 import axios from "axios";
@@ -7,6 +7,15 @@ import axios from "axios";
 function NoteList({ onDelete, onUpdate, onOverdueChange }) {
   const [notes, setNotes] = useState([]);
   const [completedNotes, setCompletedNotes] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(5);
+  const [completedCurrentPage, setCompletedCurrentPage] = useState(1);
+  const [completedPageSize, setCompletedPageSize] = useState(5);
+
+  useEffect(() => {
+    fetchNotes();
+    fetchCompletedNotes();
+  }, []);
 
   // 투두 조회
   const fetchNotes = async () => {
@@ -23,13 +32,10 @@ function NoteList({ onDelete, onUpdate, onOverdueChange }) {
         }));
         setNotes(formattedNotes);
       } else {
-        message.error(
-          response.data.message || "리스트를 불러오는 데 실패했습니다."
-        );
+        message.error(response.data.message);
       }
     } catch (error) {
       message.error("할 일 목록을 불러오는 중 오류 발생.");
-      console.error("Error:", error);
     }
   };
 
@@ -56,29 +62,35 @@ function NoteList({ onDelete, onUpdate, onOverdueChange }) {
         }));
         setCompletedNotes(formattedCompletedNotes);
       } else {
-        message.error(
-          response.data.message || "완료된 목록을 불러오는 데 실패했습니다."
-        );
+        message.error(response.data.message);
       }
     } catch (error) {
       message.error("완료된 목록을 불러오는 중 오류 발생.");
-      console.error("Error:", error);
     }
   };
 
-  // 페이지 로드 시 api호출
-  useEffect(() => {
-    fetchNotes();
-    fetchCompletedNotes();
-  }, []);
-
-  const expiredCompletedNotes = completedNotes.filter(
-    (note) =>
-      note.isCompleted &&
-      note.dateRange &&
-      dayjs().diff(dayjs(note.dateRange[1]), "day") >= 1
+  const paginatedNotes = notes.slice(
+    (currentPage - 1) * pageSize,
+    currentPage * pageSize
   );
-  const expiredCompletedNotesCount = expiredCompletedNotes.length;
+  const paginatedCompletedNotes = completedNotes.slice(
+    (completedCurrentPage - 1) * completedPageSize,
+    completedCurrentPage * completedPageSize
+  );
+
+  // 페이지 로드 시 api호출
+  // useEffect(() => {
+  //   fetchNotes();
+  //   fetchCompletedNotes();
+  // }, []);
+
+  // const expiredCompletedNotes = completedNotes.filter(
+  //   (note) =>
+  //     note.isCompleted &&
+  //     note.dateRange &&
+  //     dayjs().diff(dayjs(note.dateRange[1]), "day") >= 1
+  // );
+  // const expiredCompletedNotesCount = expiredCompletedNotes.length;
 
   return (
     <div
@@ -90,8 +102,8 @@ function NoteList({ onDelete, onUpdate, onOverdueChange }) {
       }}
     >
       <h2>할 일</h2>
-      {notes.length > 0 ? (
-        notes.map((note) => (
+      {paginatedNotes.length > 0 ? (
+        paginatedNotes.map((note) => (
           <NoteCard
             key={note.id}
             note={note}
@@ -106,37 +118,48 @@ function NoteList({ onDelete, onUpdate, onOverdueChange }) {
           할 일이 비어 있습니다.
         </div>
       )}
+      <Pagination
+        current={currentPage}
+        pageSize={pageSize}
+        total={notes.length}
+        onChange={(page, size) => {
+          setCurrentPage(page);
+          setPageSize(size);
+        }}
+        showSizeChanger
+        onShowSizeChange={(current, size) => setPageSize(size)}
+        style={{ textAlign: "center", marginTop: 20 }}
+      />
+
       <h2 style={{ marginTop: 30 }}>완료된 일</h2>
-      {expiredCompletedNotesCount >= 2 ? (
-        <div style={{ fontSize: 24, textAlign: "center", width: "100%" }}>
-          No note available
-        </div>
-      ) : completedNotes.length > 0 ? (
-        completedNotes
-          .filter(
-            (note) =>
-              !(
-                note.isCompleted &&
-                note.dateRange &&
-                dayjs().diff(dayjs(note.dateRange[1]), "day") >= 1 &&
-                expiredCompletedNotesCount >= 2
-              )
-          )
-          .map((note) => (
-            <NoteCard
-              key={note.id}
-              note={note}
-              onDelete={onDelete}
-              onOverdueChange={onOverdueChange}
-              fetchNotes={fetchNotes}
-              fetchCompletedNotes={fetchCompletedNotes}
-            />
-          ))
+      {paginatedCompletedNotes.length > 0 ? (
+        paginatedCompletedNotes.map((note) => (
+          <NoteCard
+            key={note.id}
+            note={note}
+            onDelete={onDelete}
+            onOverdueChange={onOverdueChange}
+            fetchNotes={fetchNotes}
+            fetchCompletedNotes={fetchCompletedNotes}
+          />
+        ))
       ) : (
         <div style={{ fontSize: 16, textAlign: "center", width: "100%" }}>
           완료된 일이 없습니다.
         </div>
       )}
+      <Pagination
+        current={completedCurrentPage}
+        pageSize={completedPageSize}
+        total={completedNotes.length}
+        onChange={(page, size) => {
+          setCompletedCurrentPage(page);
+          setCompletedPageSize(size);
+        }}
+        showSizeChanger
+        onShowSizeChange={(current, size) => setCompletedPageSize(size)}
+        style={{ textAlign: "center", marginTop: 20 }}
+      />
       <BackTop />
     </div>
   );
