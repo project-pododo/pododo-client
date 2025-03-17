@@ -23,7 +23,7 @@ function NoteCard({
   const handleContentChange = (e) => setContent(e.target.value);
 
   const isOverdue = note.dateRange && dayjs().isAfter(dayjs(note.dateRange[1]));
- 
+
   useEffect(() => {
     onOverdueChange();
   }, [isOverdue, note.id, onOverdueChange]);

@@ -48,7 +48,7 @@ function NoteList({ onDelete, onUpdate, onOverdueChange }) {
     // const endDate = dayjs(today).endOf("day").format("YYYY-MM-DD HH:mm");
 
     try {
-      const response = await axios.get(`/api/v1/todo/completed`, {
+      const response = await axios.get("/api/v1/todo/completed", {
         params: { startDate, endDate },
       });
 
