@@ -4,7 +4,7 @@ import NoteCard from "./NoteCard";
 import dayjs from "dayjs";
 import axios from "axios";
 
-function NoteList({ onDelete, onUpdate, onOverdueChange }) {
+function NoteList({ onDelete }) {
   const [notes, setNotes] = useState([]);
   const [completedNotes, setCompletedNotes] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
@@ -23,13 +23,16 @@ function NoteList({ onDelete, onUpdate, onOverdueChange }) {
       const response = await axios.get("/api/v1/todo");
 
       if (response.data && response.data.code === "10000") {
-        const formattedNotes = response.data.data.map((item) => ({
-          id: item.todoMstId,
-          isCompleted: item.todoStatus === "DONE",
-          title: item.todoName,
-          content: item.todoDetail,
-          dateRange: [dayjs(item.startDate), dayjs(item.endDate)],
-        }));
+        const formattedNotes = response.data.data
+          .map((item) => ({
+            id: item.todoMstId,
+            isCompleted: item.todoStatus === "DONE",
+            title: item.todoName,
+            content: item.todoDetail,
+            dateRange: [dayjs(item.startDate), dayjs(item.endDate)],
+          }))
+          .sort((a, b) => dayjs(b.dateRange[1]).diff(dayjs(a.dateRange[1])));
+
         setNotes(formattedNotes);
       } else {
         message.error(response.data.message);
@@ -53,13 +56,15 @@ function NoteList({ onDelete, onUpdate, onOverdueChange }) {
       });
 
       if (response.data && response.data.code === "10000") {
-        const formattedCompletedNotes = response.data.data.map((item) => ({
-          id: item.todoMstId,
-          isCompleted: item.todoStatus === "DONE",
-          title: item.todoName,
-          content: item.todoDetail,
-          dateRange: [dayjs(item.startDate), dayjs(item.endDate)],
-        }));
+        const formattedCompletedNotes = response.data.data
+          .map((item) => ({
+            id: item.todoMstId,
+            isCompleted: item.todoStatus === "DONE",
+            title: item.todoName,
+            content: item.todoDetail,
+            dateRange: [dayjs(item.startDate), dayjs(item.endDate)],
+          }))
+          .sort((a, b) => dayjs(b.dateRange[1]).diff(dayjs(a.dateRange[1])));
         setCompletedNotes(formattedCompletedNotes);
       } else {
         message.error(response.data.message);
@@ -78,20 +83,6 @@ function NoteList({ onDelete, onUpdate, onOverdueChange }) {
     completedCurrentPage * completedPageSize
   );
 
-  // 페이지 로드 시 api호출
-  // useEffect(() => {
-  //   fetchNotes();
-  //   fetchCompletedNotes();
-  // }, []);
-
-  // const expiredCompletedNotes = completedNotes.filter(
-  //   (note) =>
-  //     note.isCompleted &&
-  //     note.dateRange &&
-  //     dayjs().diff(dayjs(note.dateRange[1]), "day") >= 1
-  // );
-  // const expiredCompletedNotesCount = expiredCompletedNotes.length;
-
   return (
     <div
       style={{
@@ -108,7 +99,6 @@ function NoteList({ onDelete, onUpdate, onOverdueChange }) {
             key={note.id}
             note={note}
             onDelete={onDelete}
-            onOverdueChange={onOverdueChange}
             fetchNotes={fetchNotes}
             fetchCompletedNotes={fetchCompletedNotes}
           />
@@ -138,7 +128,6 @@ function NoteList({ onDelete, onUpdate, onOverdueChange }) {
             key={note.id}
             note={note}
             onDelete={onDelete}
-            onOverdueChange={onOverdueChange}
             fetchNotes={fetchNotes}
             fetchCompletedNotes={fetchCompletedNotes}
           />

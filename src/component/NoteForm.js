@@ -55,6 +55,7 @@ function NoteForm({ onAdd }) {
         marginBottom: 16,
         borderColor: "#6A0DAD",
         backgroundColor: "#F3E5F5",
+        borderRadius: "12px",
       }}
     >
       <div style={{ display: "flex", gap: "8px", marginBottom: "8px" }}>
