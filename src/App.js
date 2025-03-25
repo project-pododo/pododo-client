@@ -14,12 +14,13 @@ import {
   CheckCircleOutlined,
   UserOutlined,
 } from "@ant-design/icons";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import NoteForm from "./component/NoteForm";
 import NoteList from "./component/NoteList";
 import RubbishList from "./component/RubbishList";
 import CompletedList from "./component/CompletedList";
 import dayjs from "dayjs";
+import axios from "axios";
 
 const { Content, Sider, Header } = Layout;
 
@@ -30,6 +31,8 @@ function App() {
   const [isOverdueCount, setIsOverdueCount] = useState(0);
   const navigate = useNavigate();
   const location = useLocation();
+  const [collapsed, setCollapsed] = useState(false);
+  const avatarRef = useRef(null);
 
   const handleUpdateNote = (id, updateNote) => {
     setNotes((prevNotes) =>
@@ -50,7 +53,7 @@ function App() {
     setNotes([...updateNotes]);
 
     setRubbish((prevRubbish) => [...prevRubbish, deleteNote]);
-    console.log("upodated Note:", updateNotes);
+    console.log("updated Note:", updateNotes);
   };
 
   const handleRestore = (id) => {
@@ -61,12 +64,25 @@ function App() {
     }
   };
 
-  const handleOverdueChange = () => {
-    const overdueCount = notes.filter(
-      (note) => note.dateRange && dayjs().isAfter(dayjs(note.dateRange[1]))
-    ).length;
-    setIsOverdueCount(overdueCount);
+  const fetchOverdueCount = async () => {
+    try {
+      const response = await axios.get("/api/v1/todo");
+
+      if (response.data && response.data.code === "10000") {
+        const overdueCount = response.data.data.filter((item) => {
+          const endDate = dayjs(item.endDate);
+          return endDate.isBefore(dayjs()) && item.todoStatus !== "DONE";
+        }).length;
+
+        setIsOverdueCount(overdueCount);
+      } else {
+      }
+    } catch (error) {}
   };
+
+  useEffect(() => {
+    fetchOverdueCount();
+  }, []);
 
   useEffect(() => {
     switch (location.pathname) {
@@ -115,16 +131,25 @@ function App() {
             marginRight: "20px",
           }}
         >
-          <Badge count={isOverdueCount} offset={[10, 0]}>
-            <Avatar size="large" icon={<UserOutlined />} />{" "}
+          <Badge count={isOverdueCount} showZero offset={[10, 0]}>
+            <Avatar
+              ref={avatarRef}
+              size="large"
+              icon={<UserOutlined />}
+              style={{ backgroundColor: "#ffffff", color: "#D1A7E1" }}
+            />{" "}
           </Badge>
         </div>
       </Header>
-      <Layout style={{}}>
+      <Layout>
         <Sider
           width={200}
           className="site-layout-background"
           style={{ backgroundColor: "#F4E6F1" }}
+          collapsible
+          collapsed={collapsed}
+          onCollapse={(value) => setCollapsed(value)}
+          breakpoint="lg"
         >
           <Menu
             mode="inline"
@@ -148,6 +173,7 @@ function App() {
                   navigate("/");
               }
             }}
+            inlineCollapsed={collapsed}
             style={{ height: "100vh", backgroundColor: "#F4E6F1" }}
           >
             <Menu.Item
@@ -241,7 +267,7 @@ function App() {
                     notes={notes}
                     onDelete={handleDelete}
                     onUpdate={handleUpdateNote}
-                    onOverdueChange={handleOverdueChange}
+                    // onOverdueChange={handleOverdueChange}
                   />
                 }
               />
@@ -251,7 +277,7 @@ function App() {
                   <CompletedList
                     notes={notes}
                     onDelete={handleDelete}
-                    onOverdueChange={handleOverdueChange}
+                    // onOverdueChange={handleOverdueChange}
                   />
                 }
               />

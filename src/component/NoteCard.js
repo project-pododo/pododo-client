@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from "react";
-import { Collapse, Button, Input, Switch, Dropdown, Menu, message } from "antd";
+import React, { useState } from "react";
+import { Collapse, Button, Input, Switch, Dropdown, message } from "antd";
 import { MoreOutlined } from "@ant-design/icons";
 import dayjs from "dayjs";
 import axios from "axios";
@@ -7,13 +7,7 @@ import "../css/CustomStyle.css";
 
 const { Panel } = Collapse;
 
-function NoteCard({
-  note,
-  onDelete,
-  onOverdueChange,
-  fetchNotes,
-  fetchCompletedNotes,
-}) {
+function NoteCard({ note, fetchNotes, fetchCompletedNotes }) {
   const [title, setTitle] = useState(note.title);
   const [content, setContent] = useState(note.content);
   const [isEditingTitle, setIsEditingTitle] = useState(false);
@@ -23,10 +17,6 @@ function NoteCard({
   const handleContentChange = (e) => setContent(e.target.value);
 
   const isOverdue = note.dateRange && dayjs().isAfter(dayjs(note.dateRange[1]));
-
-  useEffect(() => {
-    onOverdueChange();
-  }, [isOverdue, note.id, onOverdueChange]);
 
   const saveTitle = () => {
     setIsEditingTitle(false);
@@ -95,19 +85,23 @@ function NoteCard({
     }
   };
 
-  const deleteMenu = (
-    <Menu>
-      <Menu.Item onClick={() => handleDelete(note.id)} danger>
-        삭제
-      </Menu.Item>
-    </Menu>
-  );
+  const deleteMenuItems = [
+    {
+      key: "delete",
+      label: "삭제",
+      danger: true,
+      onClick: () => handleDelete(note.id),
+    },
+  ];
 
   return (
     <Collapse
       accordion={false}
       style={{
-        backgroundColor: note.isCompleted ? "#D5F5E3" : "#9B59B6", // 완료된 경우 색상 변경
+        backgroundColor: "#fff",
+        borderRadius: "12px",
+        overflow: "hidden",
+        marginBottom: "4px",
       }}
     >
       <Panel
@@ -128,6 +122,9 @@ function NoteCard({
                 onChange={() => handleToggleStatus(note.id)}
                 size="large"
                 className="ant-switch02"
+                style={{
+                  background: note.isCompleted ? "" : "#9B59B6",
+                }}
               />
               {isEditingTitle ? (
                 <Input
@@ -146,10 +143,10 @@ function NoteCard({
                   style={{
                     textDecoration: note.isCompleted ? "line-through" : "none",
                     color: note.isCompleted
-                      ? "#7D7D7D"
+                      ? "#9B59B6"
                       : isOverdue
                       ? "red"
-                      : "inherit",
+                      : "#9B59B6",
                     fontSize: "16px",
                     fontWeight: "bold",
                   }}
@@ -161,7 +158,7 @@ function NoteCard({
             {note.dateRange && (
               <p
                 style={{
-                  color: "#000",
+                  color: "#9B59B6",
                   fontSize: "16px",
                   marginTop: "8px",
                   marginBottom: "8px",
@@ -178,8 +175,8 @@ function NoteCard({
         key={note.id}
         extra={
           <Dropdown
-            overlay={deleteMenu}
-            trigger={["hover"]}
+            menu={{ items: deleteMenuItems }}
+            trigger={["click"]}
             placement="bottomLeft"
             arrow
           >

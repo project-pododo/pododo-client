@@ -86,7 +86,7 @@ function RubbishList() {
       />
       {paginatedRubbish.length > 0 ? (
         <>
-          <Collapse accordion={false}>
+          <div>
             {paginatedRubbish.map((note, index) => {
               const restoreMenu = (
                 <Menu>
@@ -97,49 +97,66 @@ function RubbishList() {
               );
 
               return (
-                <Panel
-                  header={
-                    <div
-                      style={{
-                        display: "flex",
-                        justifyContent: "space-between",
-                        alignItems: "center",
-                        width: "100%",
-                      }}
-                    >
-                      <div style={{ fontWeight: "bold" }}>{note.title}</div>
-                      {note.dateRange && (
-                        <p style={{ fontSize: "14px", margin: 0 }}>
-                          {dayjs(note.dateRange[0]).format("YYYY-MM-DD HH:mm")}{" "}
-                          ~{" "}
-                          {dayjs(note.dateRange[1]).format("YYYY-MM-DD HH:mm")}
-                        </p>
-                      )}
-                    </div>
-                  }
+                <Collapse
                   key={note.id || index}
-                  extra={
-                    <Dropdown
-                      overlay={restoreMenu}
-                      trigger={["hover"]}
-                      placement="bottomLeft"
-                      arrow
-                    >
-                      <Button
-                        type="text"
-                        icon={<MoreOutlined />}
-                        onClick={(e) => e.stopPropagation()}
-                      />
-                    </Dropdown>
-                  }
+                  accordion
+                  style={{
+                    borderRadius: "12px",
+                    marginBottom: "4px",
+                    overflow: "hidden",
+                  }}
                 >
-                  <div style={{ padding: "10px", backgroundColor: "#F4E6F1" }}>
-                    <p style={{ whiteSpace: "pre-line" }}>{note.content}</p>
-                  </div>
-                </Panel>
+                  <Panel
+                    header={
+                      <div
+                        style={{
+                          display: "flex",
+                          justifyContent: "space-between",
+                          alignItems: "center",
+                          width: "100%",
+                          color: "#9B59B6",
+                        }}
+                      >
+                        <div style={{ fontWeight: "bold" }}>{note.title}</div>
+                        {note.dateRange && (
+                          <p style={{ fontSize: "14px", margin: 0 }}>
+                            {dayjs(note.dateRange[0]).format(
+                              "YYYY-MM-DD HH:mm"
+                            )}{" "}
+                            ~{" "}
+                            {dayjs(note.dateRange[1]).format(
+                              "YYYY-MM-DD HH:mm"
+                            )}
+                          </p>
+                        )}
+                      </div>
+                    }
+                    key={note.id || index}
+                    extra={
+                      <Dropdown
+                        overlay={restoreMenu}
+                        trigger={["click"]}
+                        placement="bottomLeft"
+                        arrow
+                      >
+                        <Button
+                          type="text"
+                          icon={<MoreOutlined />}
+                          onClick={(e) => e.stopPropagation()}
+                        />
+                      </Dropdown>
+                    }
+                  >
+                    <div
+                      style={{ padding: "10px", backgroundColor: "#F4E6F1" }}
+                    >
+                      <p style={{ whiteSpace: "pre-line" }}>{note.content}</p>
+                    </div>
+                  </Panel>
+                </Collapse>
               );
             })}
-          </Collapse>
+          </div>
           <Pagination
             current={currentPage}
             pageSize={pageSize}

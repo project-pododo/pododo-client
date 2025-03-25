@@ -113,7 +113,7 @@ function CompletedList() {
 
       {paginatedNotes.length > 0 ? (
         <>
-          <Collapse accordion={false}>
+          <div>
             {paginatedNotes.map((note) => {
               const deleteMenu = (
                 <Menu>
@@ -124,80 +124,92 @@ function CompletedList() {
               );
 
               return (
-                <Panel
-                  header={
-                    <div
-                      style={{
-                        display: "flex",
-                        justifyContent: "space-between",
-                        alignItems: "center",
-                        width: "100%",
-                      }}
-                    >
+                <Collapse
+                  key={note.id}
+                  accordion
+                  style={{
+                    borderRadius: "12px",
+                    marginBottom: "4px",
+                    overflow: "hidden",
+                  }}
+                >
+                  <Panel
+                    header={
                       <div
                         style={{
                           display: "flex",
+                          justifyContent: "space-between",
                           alignItems: "center",
-                          gap: "20px",
+                          width: "100%",
                         }}
                       >
-                        <Switch
-                          checkedChildren="완료"
-                          unCheckedChildren="미완료"
-                          checked={note.isCompleted}
-                          onChange={() => handleToggleStatus(note.id)}
-                          size="large"
-                          className="ant-switch02"
-                        />
                         <div
                           style={{
-                            color: "#7D7D7D",
-                            fontSize: "16px",
-                            fontWeight: "bold",
+                            display: "flex",
+                            alignItems: "center",
+                            gap: "20px",
                           }}
                         >
-                          {note.title}
+                          <Switch
+                            checkedChildren="완료"
+                            unCheckedChildren="미완료"
+                            checked={note.isCompleted}
+                            onChange={() => handleToggleStatus(note.id)}
+                            size="large"
+                            className="ant-switch02"
+                          />
+                          <div
+                            style={{
+                              color: "#9B59B6",
+                              fontSize: "16px",
+                              fontWeight: "bold",
+                            }}
+                          >
+                            {note.title}
+                          </div>
                         </div>
+                        {note.endDate && (
+                          <p
+                            style={{
+                              color: "#9B59B6",
+                              fontSize: "16px",
+                              marginTop: "8px",
+                              marginBottom: "8px",
+                              marginRight: "10px",
+                              minWidth: "258px",
+                            }}
+                          >
+                            완료일: {note.endDate.format("YYYY-MM-DD HH:mm")}
+                          </p>
+                        )}
                       </div>
-                      {note.endDate && (
-                        <p
-                          style={{
-                            color: "#000",
-                            fontSize: "16px",
-                            marginTop: "8px",
-                            marginBottom: "8px",
-                            marginRight: "10px",
-                            minWidth: "258px",
-                          }}
-                        >
-                          완료일: {note.endDate.format("YYYY-MM-DD HH:mm")}
-                        </p>
-                      )}
-                    </div>
-                  }
-                  key={note.id}
-                  extra={
-                    <Dropdown
-                      overlay={deleteMenu}
-                      trigger={["hover"]}
-                      placement="bottomLeft"
-                      arrow
+                    }
+                    key={note.id}
+                    extra={
+                      <Dropdown
+                        overlay={deleteMenu}
+                        trigger={["click"]}
+                        placement="bottomLeft"
+                        arrow
+                      >
+                        <Button
+                          type="text"
+                          icon={<MoreOutlined />}
+                          onClick={(e) => e.stopPropagation()}
+                        />
+                      </Dropdown>
+                    }
+                  >
+                    <div
+                      style={{ padding: "10px", backgroundColor: "#F4E6F1" }}
                     >
-                      <Button
-                        type="text"
-                        icon={<MoreOutlined />}
-                        onClick={(e) => e.stopPropagation()}
-                      />
-                    </Dropdown>
-                  }
-                >
-                  <div style={{ padding: "10px", backgroundColor: "#F4E6F1" }}>
-                    <p style={{ whiteSpace: "pre-line" }}>{note.content}</p>
-                  </div>
-                </Panel>
+                      <p style={{ whiteSpace: "pre-line" }}>{note.content}</p>
+                    </div>
+                  </Panel>
+                </Collapse>
               );
             })}
-          </Collapse>
+          </div>
           <Pagination
             current={currentPage}
             pageSize={pageSize}
