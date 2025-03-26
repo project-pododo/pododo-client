@@ -36,3 +36,19 @@
   border-radius: 12px;
   overflow: hidden;
 }
+
+/* Modal */
+.ant-btn-primary {
+  background: #6a0dad !important;
+  border-color: #6a0dad !important;
+}
+.ant-modal {
+  width: 800px !important;
+}
+.ant-modal-content {
+  min-width: 800px;
+}
+
+.ant-modal-footer {
+  padding: 10px 24px !important;
+}
