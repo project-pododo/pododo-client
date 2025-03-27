@@ -29,7 +29,7 @@ function NoteForm({ onAdd }) {
     setLoading(true);
 
     try {
-      const response = await axios.post("/api/v1/todo", {
+      const response = await axios.post("http://35.216.16.197:8081/api/v1/todo", {
         todoName: title,
         todoDetail: content,
         startDate: dateRange[0].format("YYYY-MM-DD HH:mm"),
