@@ -9,7 +9,7 @@ function CalendarPage() {
 
   const fetchNotes = async () => {
     try {
-      const response = await axios.get("http://35.216.16.197:8081/api/v1/todo");
+      const response = await axios.get("/api/v1/todo");
 
       if (response.data && response.data.code === "10000") {
         const formattedNotes = response.data.data.map((item) => {

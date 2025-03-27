@@ -22,7 +22,7 @@ const items = [
 ];
 
 const MyCollapseList = () => {
-  const [dates, setDates] = useState(null);
+  const [ setDates] = useState(null);
 
   const onChange = (values) => {
     setDates(values ? [values[0], values[1]] : null);
