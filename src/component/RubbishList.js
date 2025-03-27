@@ -26,7 +26,7 @@ function RubbishList() {
 
   const fetchRubbishList = async () => {
     try {
-      const response = await axios.get("/api/v1/todo/rubbish");
+      const response = await axios.get("http://35.216.16.197:8081/api/v1/todo/rubbish");
 
       if (response.data.code === "10000") {
         const transformedData = response.data.data.map((item) => ({
@@ -44,7 +44,7 @@ function RubbishList() {
 
   const handleRestore = async (id) => {
     try {
-      const response = await axios.patch("/api/v1/todo/use", { todoMstId: id });
+      const response = await axios.patch("http://35.216.16.197:8081/api/v1/todo/use", { todoMstId: id });
 
       if (response.data.code === "10004") {
         message.success(response.data.message);
