@@ -1,15 +1,25 @@
 import React, { useState } from "react";
-import { Collapse, Button, Input, Switch, Dropdown, message } from "antd";
+import {
+  Collapse,
+  Button,
+  Input,
+  Switch,
+  Dropdown,
+  message,
+  DatePicker,
+} from "antd";
 import { MoreOutlined } from "@ant-design/icons";
 import dayjs from "dayjs";
 import axios from "axios";
 import "../css/CustomStyle.css";
 
 const { Panel } = Collapse;
+const { RangePicker } = DatePicker;
 
 function NoteCard({ note, fetchNotes, fetchCompletedNotes }) {
   const [title, setTitle] = useState(note.title);
   const [content, setContent] = useState(note.content);
+  const [dateRange, setDateRange] = useState(note.dateRange);
   const [isEditingTitle, setIsEditingTitle] = useState(false);
   const [isEditingContent, setIsEditingContent] = useState(false);
 
@@ -18,14 +28,30 @@ function NoteCard({ note, fetchNotes, fetchCompletedNotes }) {
 
   const isOverdue = note.dateRange && dayjs().isAfter(dayjs(note.dateRange[1]));
 
+  // const saveTitle = () => {
+  //   setIsEditingTitle(false);
+  //   handleUpdate({ ...note, title });
+  // };
+
+  // const saveContent = () => {
+  //   setIsEditingContent(false);
+  //   handleUpdate({ ...note, content });
+  // };
+
   const saveTitle = () => {
     setIsEditingTitle(false);
-    handleUpdate({ ...note, title });
+    handleUpdate({ title });
   };
 
   const saveContent = () => {
     setIsEditingContent(false);
-    handleUpdate({ ...note, content });
+    handleUpdate({ content });
+  };
+
+  const handleDateChange = (dates) => {
+    if (!dates) return;
+    setDateRange(dates);
+    handleUpdate({ dateRange: dates });
   };
 
   const handleToggleStatus = async (id) => {
@@ -46,14 +72,41 @@ function NoteCard({ note, fetchNotes, fetchCompletedNotes }) {
   };
 
   // 투두 업데이트 API
-  const handleUpdate = async (updatedNote) => {
+  // const handleUpdate = async (updatedNote) => {
+  //   try {
+  //     const response = await axios.put("/api/v1/todo", {
+  //       todoMstId: updatedNote.id,
+  //       todoName: updatedNote.title,
+  //       todoDetail: updatedNote.content,
+  //       startDate: updatedNote.dateRange[0].format("YYYY-MM-DD HH:mm"),
+  //       endDate: updatedNote.dateRange[1].format("YYYY-MM-DD HH:mm"),
+  //     });
+
+  //     if (response.data.code === "10002") {
+  //       message.success(response.data.message);
+  //       fetchNotes();
+  //       fetchCompletedNotes();
+  //     } else {
+  //       message.error(response.data.message);
+  //     }
+  //   } catch (error) {
+  //     message.error("API 호출 중 오류 발생.");
+  //   }
+  // };
+
+  const handleUpdate = async (updatedFields) => {
     try {
+      const updatedNote = {
+        ...note,
+        ...updatedFields,
+      };
+
       const response = await axios.put("/api/v1/todo", {
         todoMstId: updatedNote.id,
         todoName: updatedNote.title,
         todoDetail: updatedNote.content,
-        startDate: updatedNote.dateRange[0].format("YYYY-MM-DD HH:mm"),
-        endDate: updatedNote.dateRange[1].format("YYYY-MM-DD HH:mm"),
+        startDate: updatedNote.dateRange[0]?.format("YYYY-MM-DD HH:mm"),
+        endDate: updatedNote.dateRange[1]?.format("YYYY-MM-DD HH:mm"),
       });
 
       if (response.data.code === "10002") {
@@ -64,7 +117,7 @@ function NoteCard({ note, fetchNotes, fetchCompletedNotes }) {
         message.error(response.data.message);
       }
     } catch (error) {
-      message.error("API 호출 중 오류 발생.");
+      message.error("업데이트 중 오류 발생.");
     }
   };
 
@@ -155,21 +208,31 @@ function NoteCard({ note, fetchNotes, fetchCompletedNotes }) {
                 </div>
               )}
             </div>
-            {note.dateRange && (
-              <p
-                style={{
-                  color: "#9B59B6",
-                  fontSize: "16px",
-                  marginTop: "8px",
-                  marginBottom: "8px",
-                  marginRight: "10px",
-                  minWidth: "258px",
-                }}
-              >
-                {dayjs(note.dateRange[0]).format("YYYY-MM-DD HH:mm")} ~{" "}
-                {dayjs(note.dateRange[1]).format("YYYY-MM-DD HH:mm")}
-              </p>
-            )}
+            {note.dateRange &&
+              (note.isCompleted ? (
+                <p
+                  style={{
+                    color: "#9B59B6",
+                    fontSize: "16px",
+                    marginTop: "8px",
+                    marginBottom: "8px",
+                    marginRight: "10px",
+                    minWidth: "258px",
+                  }}
+                >
+                  {dayjs(note.dateRange[0]).format("YYYY-MM-DD HH:mm")} ~{" "}
+                  {dayjs(note.dateRange[1]).format("YYYY-MM-DD HH:mm")}
+                </p>
+              ) : (
+                <RangePicker
+                  value={dateRange}
+                  onChange={handleDateChange}
+                  showTime
+                  disabled={note.isCompleted}
+                  onClick={(e) => e.stopPropagation()}
+                  style={{ marginRight: "10px" }}
+                />
+              ))}
           </div>
         }
         key={note.id}

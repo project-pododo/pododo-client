@@ -13,12 +13,16 @@ import {
   DeleteOutlined,
   CheckCircleOutlined,
   UserOutlined,
+  CalendarOutlined,
+  DragOutlined,
 } from "@ant-design/icons";
 import { useState, useEffect, useRef } from "react";
 import NoteForm from "./component/NoteForm";
 import NoteList from "./component/NoteList";
 import RubbishList from "./component/RubbishList";
 import CompletedList from "./component/CompletedList";
+import CalendarPage from "./component/CalendarPage";
+import Dnd from "./component/Dnd";
 import dayjs from "dayjs";
 import axios from "axios";
 
@@ -98,6 +102,12 @@ function App() {
       case "/rubbish":
         setSelectedKey("4");
         break;
+      case "/CalendarPage":
+        setSelectedKey("5");
+        break;
+      case "/Dnd":
+        setSelectedKey("6");
+        break;
       default:
         setSelectedKey("1");
     }
@@ -168,6 +178,12 @@ function App() {
                   break;
                 case "4":
                   navigate("/rubbish");
+                  break;
+                case "5":
+                  navigate("/CalendarPage");
+                  break;
+                case "6":
+                  navigate("/Dnd");
                   break;
                 default:
                   navigate("/");
@@ -245,6 +261,40 @@ function App() {
                 휴지통
               </Link>
             </Menu.Item>
+            <Menu.Item
+              key="5"
+              icon={<CalendarOutlined />}
+              style={{
+                backgroundColor:
+                  selectedKey === "5" ? "#D1A7E1" : "transparent",
+              }}
+            >
+              <Link
+                to="/CalendarPage"
+                style={{
+                  color: selectedKey === "5" ? "#ffffff" : "#000055",
+                }}
+              >
+                Calendar
+              </Link>
+            </Menu.Item>
+            <Menu.Item
+              key="6"
+              icon={<DragOutlined />}
+              style={{
+                backgroundColor:
+                  selectedKey === "6" ? "#D1A7E1" : "transparent",
+              }}
+            >
+              <Link
+                to="/Dnd"
+                style={{
+                  color: selectedKey === "6" ? "#ffffff" : "#000055",
+                }}
+              >
+                Dnd
+              </Link>
+            </Menu.Item>
           </Menu>
         </Sider>
 
@@ -287,6 +337,8 @@ function App() {
                   <RubbishList rubbish={rubbish} onRestore={handleRestore} />
                 }
               />
+              <Route path="/CalendarPage" element={<CalendarPage />} />
+              <Route path="/Dnd" element={<Dnd />} />
             </Routes>
           </Content>
         </Layout>

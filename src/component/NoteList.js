@@ -116,7 +116,6 @@ function NoteList({ onDelete }) {
         todoDetail: newNoteContent,
         startDate: dateRange[0].format("YYYY-MM-DD HH:mm"),
         endDate: dateRange[1].format("YYYY-MM-DD HH:mm"),
-        // todoStatus: "TODO",
       });
 
       if (response.data && response.data.message) {
@@ -157,7 +156,7 @@ function NoteList({ onDelete }) {
         onClick={() => setIsModalOpen(true)}
         style={{
           marginBottom: 20,
-          backgroundColor: "#6A0DAD", // 보라색 테마 적용
+          backgroundColor: "#6A0DAD",
           borderColor: "#6A0DAD",
         }}
       >
