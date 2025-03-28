@@ -28,16 +28,6 @@ function NoteCard({ note, fetchNotes, fetchCompletedNotes }) {
 
   const isOverdue = note.dateRange && dayjs().isAfter(dayjs(note.dateRange[1]));
 
-  // const saveTitle = () => {
-  //   setIsEditingTitle(false);
-  //   handleUpdate({ ...note, title });
-  // };
-
-  // const saveContent = () => {
-  //   setIsEditingContent(false);
-  //   handleUpdate({ ...note, content });
-  // };
-
   const saveTitle = () => {
     setIsEditingTitle(false);
     handleUpdate({ title });
@@ -56,9 +46,12 @@ function NoteCard({ note, fetchNotes, fetchCompletedNotes }) {
 
   const handleToggleStatus = async (id) => {
     try {
-      const response = await axios.patch("/api/v1/todo/status", {
-        todoMstId: id,
-      });
+      const response = await axios.patch(
+        "http://35.216.16.197:8081/api/v1/todo/status",
+        {
+          todoMstId: id,
+        }
+      );
       if (response.status === 200 && response.data.code === "10002") {
         message.success(response.data.message);
         fetchNotes();
@@ -71,29 +64,6 @@ function NoteCard({ note, fetchNotes, fetchCompletedNotes }) {
     }
   };
 
-  // 투두 업데이트 API
-  // const handleUpdate = async (updatedNote) => {
-  //   try {
-  //     const response = await axios.put("/api/v1/todo", {
-  //       todoMstId: updatedNote.id,
-  //       todoName: updatedNote.title,
-  //       todoDetail: updatedNote.content,
-  //       startDate: updatedNote.dateRange[0].format("YYYY-MM-DD HH:mm"),
-  //       endDate: updatedNote.dateRange[1].format("YYYY-MM-DD HH:mm"),
-  //     });
-
-  //     if (response.data.code === "10002") {
-  //       message.success(response.data.message);
-  //       fetchNotes();
-  //       fetchCompletedNotes();
-  //     } else {
-  //       message.error(response.data.message);
-  //     }
-  //   } catch (error) {
-  //     message.error("API 호출 중 오류 발생.");
-  //   }
-  // };
-
   const handleUpdate = async (updatedFields) => {
     try {
       const updatedNote = {
@@ -101,13 +71,16 @@ function NoteCard({ note, fetchNotes, fetchCompletedNotes }) {
         ...updatedFields,
       };
 
-      const response = await axios.put("/api/v1/todo", {
-        todoMstId: updatedNote.id,
-        todoName: updatedNote.title,
-        todoDetail: updatedNote.content,
-        startDate: updatedNote.dateRange[0]?.format("YYYY-MM-DD HH:mm"),
-        endDate: updatedNote.dateRange[1]?.format("YYYY-MM-DD HH:mm"),
-      });
+      const response = await axios.put(
+        "http://35.216.16.197:8081/api/v1/todo",
+        {
+          todoMstId: updatedNote.id,
+          todoName: updatedNote.title,
+          todoDetail: updatedNote.content,
+          startDate: updatedNote.dateRange[0]?.format("YYYY-MM-DD HH:mm"),
+          endDate: updatedNote.dateRange[1]?.format("YYYY-MM-DD HH:mm"),
+        }
+      );
 
       if (response.data.code === "10002") {
         message.success(response.data.message);
@@ -123,9 +96,12 @@ function NoteCard({ note, fetchNotes, fetchCompletedNotes }) {
 
   const handleDelete = async (id) => {
     try {
-      const response = await axios.delete("/api/v1/todo", {
-        data: { todoMstId: id },
-      });
+      const response = await axios.delete(
+        "http://35.216.16.197:8081/api/v1/todo",
+        {
+          data: { todoMstId: id },
+        }
+      );
       if (response.status === 200 && response.data.code === "10003") {
         message.success(response.data.message);
         fetchNotes();

@@ -28,7 +28,7 @@ function CompletedList() {
   const fetchCompletedNotes = async () => {
     try {
       const response = await axios.get(
-        "/api/v1/todo/completed?startDate=&endDate="
+        "http://35.216.16.197:8081/api/v1/todo/completed?startDate=&endDate="
       );
 
       if (response.status === 200 && response.data.code === "10000") {
@@ -51,9 +51,12 @@ function CompletedList() {
 
   const handleToggleStatus = async (id) => {
     try {
-      const response = await axios.patch("/api/v1/todo/status", {
-        todoMstId: id,
-      });
+      const response = await axios.patch(
+        "http://35.216.16.197:8081/api/v1/todo/status",
+        {
+          todoMstId: id,
+        }
+      );
       if (response.status === 200 && response.data.code === "10002") {
         message.success(response.data.message);
         fetchCompletedNotes();
@@ -67,9 +70,12 @@ function CompletedList() {
 
   const handleDelete = async (id) => {
     try {
-      const response = await axios.delete("/api/v1/todo", {
-        data: { todoMstId: id },
-      });
+      const response = await axios.delete(
+        "http://35.216.16.197:8081/api/v1/todo",
+        {
+          data: { todoMstId: id },
+        }
+      );
       if (response.status === 200 && response.data.code === "10003") {
         message.success(response.data.message);
         fetchCompletedNotes();
