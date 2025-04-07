@@ -35,7 +35,7 @@ function NoteList({ onDelete }) {
     fetchCompletedNotes();
   }, []);
 
-  // 투두 조회
+  // todo 조회
   const fetchNotes = async () => {
     try {
       const response = await axios.get("/api/v1/todo");
@@ -60,12 +60,12 @@ function NoteList({ onDelete }) {
     }
   };
 
-  // 완료 조회
+  // completed 조회
   const fetchCompletedNotes = async () => {
     try {
       const response = await axios.get("/api/v1/todo/completed", {
         params: {
-          startDate: "2025-01-01",
+          startDate: "2025-01-01", // 이후 날짜 기준 정립해서 V2에서 수정
           endDate: dayjs().format("YYYY-MM-DD"),
         },
       });
